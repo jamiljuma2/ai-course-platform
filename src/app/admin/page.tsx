@@ -26,6 +26,11 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [adminKey, setAdminKey] = useState('')
   const [authed, setAuthed] = useState(false)
+  const [meetingTitle, setMeetingTitle] = useState('')
+  const [meetingWhen, setMeetingWhen] = useState('')
+  const [meetingLink, setMeetingLink] = useState(process.env.NEXT_PUBLIC_GOOGLE_MEET_LINK || '')
+  const [notifyUsers, setNotifyUsers] = useState(true)
+  const [certEmail, setCertEmail] = useState('')
 
   const fetchStats = async () => {
     setLoading(true)
@@ -47,6 +52,46 @@ export default function AdminDashboard() {
 
   const exportCSV = () => {
     window.open('/api/admin/export?key=' + adminKey, '_blank')
+  }
+
+  const scheduleMeeting = async () => {
+    try {
+      const res = await fetch('/api/admin/schedule', {
+        method: 'POST',
+        headers: { 'x-admin-key': adminKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: meetingTitle, scheduled_at: meetingWhen, meet_link: meetingLink, notify: notifyUsers }),
+      })
+      if (res.ok) {
+        alert('Meeting scheduled')
+        setMeetingTitle('')
+        setMeetingWhen('')
+      } else {
+        const err = await res.json()
+        alert(err?.error || 'Failed')
+      }
+    } catch (e) {
+      alert('Failed to schedule meeting')
+    }
+  }
+
+  const releaseCertificate = async () => {
+    try {
+      const res = await fetch('/api/admin/release-certificate', {
+        method: 'POST',
+        headers: { 'x-admin-key': adminKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: certEmail }),
+      })
+      if (res.ok) {
+        const d = await res.json()
+        alert('Certificate released: ' + (d.certificateUrl || ''))
+        setCertEmail('')
+      } else {
+        const err = await res.json()
+        alert(err?.error || 'Failed')
+      }
+    } catch (e) {
+      alert('Failed to release certificate')
+    }
   }
 
   const statusBadge = (status: string) => {
@@ -119,6 +164,31 @@ export default function AdminDashboard() {
                   <div className="text-xs text-dark-400 mt-1">{label}</div>
                 </div>
               ))}
+            </div>
+
+            {/* Meetings + Certificates */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-8">
+              <div className="card">
+                <h3 className="text-lg font-bold text-white mb-3">Schedule Live Session</h3>
+                <input className="w-full mb-2 bg-dark-800 p-2 rounded" placeholder="Title" value={meetingTitle} onChange={e=>setMeetingTitle(e.target.value)} />
+                <input className="w-full mb-2 bg-dark-800 p-2 rounded" placeholder="YYYY-MM-DDTHH:MM" value={meetingWhen} onChange={e=>setMeetingWhen(e.target.value)} />
+                <input className="w-full mb-2 bg-dark-800 p-2 rounded" placeholder="Meet link" value={meetingLink} onChange={e=>setMeetingLink(e.target.value)} />
+                <div className="flex items-center gap-2 mb-3">
+                  <input id="notify" type="checkbox" checked={notifyUsers} onChange={e=>setNotifyUsers(e.target.checked)} />
+                  <label htmlFor="notify" className="text-sm text-dark-400">Notify enrolled users</label>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={scheduleMeeting} className="btn-primary">Schedule & Notify</button>
+                </div>
+              </div>
+
+              <div className="card">
+                <h3 className="text-lg font-bold text-white mb-3">Release Certificate</h3>
+                <input className="w-full mb-2 bg-dark-800 p-2 rounded" placeholder="Student email" value={certEmail} onChange={e=>setCertEmail(e.target.value)} />
+                <div className="flex gap-2">
+                  <button onClick={releaseCertificate} className="btn-primary">Release Certificate</button>
+                </div>
+              </div>
             </div>
 
             {/* Recent Payments */}

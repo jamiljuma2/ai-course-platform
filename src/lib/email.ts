@@ -165,3 +165,47 @@ export async function sendAdminNotification(subject: string, message: string) {
     </div>`,
   })
 }
+
+// --- MEETING NOTIFICATION ---
+export async function sendMeetingNotification(user: User, meeting: any) {
+  const resend = getResendClient()
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL
+  const html = `
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;background:#fff;color:#111;">
+      <h2 style="color:#e8820f;">Upcoming Live Session: ${meeting.title}</h2>
+      <p>Hi ${user.name},</p>
+      <p>You are invited to a live session scheduled on <strong>${new Date(meeting.scheduled_at).toLocaleString()}</strong>.</p>
+      ${meeting.meet_link ? `<p>Join here: <a href="${meeting.meet_link}">${meeting.meet_link}</a></p>` : ''}
+      <p style="margin-top:16px;"><a href="${appUrl}/dashboard" style="background:#e8820f;color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none;">Open Dashboard</a></p>
+    </div>
+  `
+
+  const result = await resend.emails.send({ from: FROM, to: user.email, subject: `Live Session: ${meeting.title}`, html })
+
+  // log
+  const supabase = createAdminServerClient()
+  await supabase.from('email_logs').insert({ user_id: user.id, type: 'meeting_notification', recipient: user.email, subject: `Live Session: ${meeting.title}`, status: 'sent', provider_id: result.data?.id })
+
+  return result
+}
+
+// --- CERTIFICATE EMAIL ---
+export async function sendCertificateEmail(user: User, certificateUrl: string) {
+  const resend = getResendClient()
+  const html = `
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;background:#fff;color:#111;">
+      <h2 style="color:#e8820f;">Your Course Certificate</h2>
+      <p>Hi ${user.name},</p>
+      <p>Congratulations — your certificate is ready. Download it here:</p>
+      <p><a href="${certificateUrl}" style="color:#e8820f;">Download Certificate</a></p>
+      <p style="margin-top:16px;">If you have any issues, reply to this email.</p>
+    </div>
+  `
+
+  const result = await resend.emails.send({ from: FROM, to: user.email, subject: `Your Course Certificate`, html })
+
+  const supabase = createAdminServerClient()
+  await supabase.from('email_logs').insert({ user_id: user.id, type: 'certificate', recipient: user.email, subject: `Your Course Certificate`, status: 'sent', provider_id: result.data?.id })
+
+  return result
+}
