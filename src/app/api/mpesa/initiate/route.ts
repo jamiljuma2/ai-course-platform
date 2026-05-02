@@ -1,7 +1,7 @@
 // app/api/mpesa/initiate/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { initiateSTKPush, isValidKenyanPhone, formatPhone } from '@/lib/mpesa'
-import { createAdminServerClient } from '@/lib/supabase/server'
+import { createAdminServerClient } from '@/lib/supabase/admin'
 
 async function resolveAuthUserId(
   supabase: ReturnType<typeof createAdminServerClient>,

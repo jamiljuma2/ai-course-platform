@@ -6,10 +6,13 @@
 // ============================================================
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminServerClient } from '@/lib/supabase/server'
+import { createAdminServerClient } from '@/lib/supabase/admin'
 import { parseCallbackMetadata, verifyLipanaSignature } from '@/lib/mpesa'
 import { sendEnrollmentEmail, sendPaymentFailedEmail, sendAdminNotification } from '@/lib/email'
 import type { MpesaCallbackBody } from '@/types'
+
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
   try {

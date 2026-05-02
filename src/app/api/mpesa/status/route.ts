@@ -1,6 +1,6 @@
 // app/api/mpesa/status/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminServerClient } from '@/lib/supabase/server'
+import { createAdminServerClient } from '@/lib/supabase/admin'
 
 // Poll payment status from our database
 export async function GET(req: NextRequest) {

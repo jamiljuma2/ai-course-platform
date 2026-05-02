@@ -1,6 +1,6 @@
 // app/api/admin/stats/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminServerClient } from '@/lib/supabase/server'
+import { createAdminServerClient } from '@/lib/supabase/admin'
 
 function verifyAdmin(req: NextRequest): boolean {
   const key = req.headers.get('x-admin-key')

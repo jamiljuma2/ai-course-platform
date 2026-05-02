@@ -2,7 +2,7 @@
 // EMAIL SERVICE - Powered by Resend
 // ============================================================
 import { Resend } from 'resend'
-import { createAdminServerClient } from '@/lib/supabase/server'
+import { createAdminServerClient } from '@/lib/supabase/admin'
 import type { User, Course } from '@/types'
 
 const resend = new Resend(process.env.RESEND_API_KEY)

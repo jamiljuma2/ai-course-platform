@@ -1,6 +1,6 @@
 // app/api/admin/export/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminServerClient } from '@/lib/supabase/server'
+import { createAdminServerClient } from '@/lib/supabase/admin'
 
 export async function GET(req: NextRequest) {
   const key = req.nextUrl.searchParams.get('key')
