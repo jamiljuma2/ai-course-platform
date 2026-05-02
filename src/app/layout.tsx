@@ -1,0 +1,44 @@
+import type { Metadata } from 'next'
+import { Sora, JetBrains_Mono } from 'next/font/google'
+import { Toaster } from 'react-hot-toast'
+import './globals.css'
+
+const sora = Sora({
+  subsets: ['latin'],
+  variable: '--font-sora',
+  display: 'swap',
+})
+
+const jetbrains = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains',
+  display: 'swap',
+})
+
+export const metadata: Metadata = {
+  title: 'AI for Beginners – Practical AI Skills | Kenya',
+  description: 'Master AI tools to earn more, work smarter, and build a profitable digital career. Enroll for KES 2,500. Pay with M-Pesa.',
+  keywords: 'AI course Kenya, ChatGPT training, freelancing AI, M-Pesa course, online learning Kenya',
+  openGraph: {
+    title: 'AI for Beginners – Practical AI Skills',
+    description: 'Join 500+ Kenyans mastering AI for income and career growth.',
+    type: 'website',
+  },
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" className={`${sora.variable} ${jetbrains.variable}`}>
+      <body className="bg-dark-900 text-white antialiased">
+        {children}
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            style: { background: '#18181b', color: '#fff', border: '1px solid #27272a' },
+            success: { iconTheme: { primary: '#e8820f', secondary: '#fff' } },
+          }}
+        />
+      </body>
+    </html>
+  )
+}
