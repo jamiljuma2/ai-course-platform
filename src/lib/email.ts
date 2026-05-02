@@ -5,7 +5,15 @@ import { Resend } from 'resend'
 import { createAdminServerClient } from '@/lib/supabase/admin'
 import type { User, Course } from '@/types'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY is not configured')
+  }
+
+  return new Resend(apiKey)
+}
+
 const FROM = process.env.EMAIL_FROM || 'AI Course <noreply@aicourse.co.ke>'
 
 // --- ENROLLMENT CONFIRMATION EMAIL ---
@@ -94,6 +102,7 @@ export async function sendEnrollmentEmail(user: User, course: Course) {
   `
 
   try {
+    const resend = getResendClient()
     const result = await resend.emails.send({
       from: FROM,
       to: user.email,
@@ -121,6 +130,7 @@ export async function sendEnrollmentEmail(user: User, course: Course) {
 
 // --- PAYMENT FAILED EMAIL ---
 export async function sendPaymentFailedEmail(email: string, name: string, reason?: string) {
+  const resend = getResendClient()
   await resend.emails.send({
     from: FROM,
     to: email,
@@ -143,6 +153,7 @@ export async function sendPaymentFailedEmail(email: string, name: string, reason
 // --- ADMIN NOTIFICATION ---
 export async function sendAdminNotification(subject: string, message: string) {
   if (!process.env.SUPPORT_EMAIL) return
+  const resend = getResendClient()
   await resend.emails.send({
     from: FROM,
     to: process.env.SUPPORT_EMAIL,
