@@ -38,7 +38,13 @@ export async function middleware(request: NextRequest) {
 
   // Redirect logged-in users away from login page
   if (pathname === '/login' && user) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    const { data: profile } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    return NextResponse.redirect(new URL(profile?.role === 'admin' ? '/admin' : '/dashboard', request.url))
   }
 
   return response

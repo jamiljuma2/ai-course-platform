@@ -19,6 +19,22 @@ export default function LoginPageClient() {
 
   // removed magic-link helper: using password reset flow instead
 
+  const resolvePostLoginRoute = async (userId?: string | null, fallbackPath = redirect) => {
+    if (!userId) return fallbackPath
+
+    const { data: profile } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', userId)
+      .maybeSingle()
+
+    if (profile?.role === 'admin') {
+      return '/admin'
+    }
+
+    return fallbackPath
+  }
+
   const handleForgotPassword = async () => {
     if (!form.email) {
       toast.error('Enter your email first to reset your password')
@@ -66,7 +82,7 @@ export default function LoginPageClient() {
           }
         } else {
           await new Promise((resolve) => setTimeout(resolve, 500))
-          const { error } = await supabase.auth.signInWithPassword({
+          const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password,
           })
@@ -76,11 +92,12 @@ export default function LoginPageClient() {
             setTab('login')
           } else {
             toast.success('Account created successfully')
-            router.push(redirect)
+            const nextPath = await resolvePostLoginRoute(data.user?.id)
+            router.push(nextPath)
           }
         }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
@@ -105,8 +122,10 @@ export default function LoginPageClient() {
           } else {
             toast.error(error.message)
           }
+        } else {
+          const nextPath = await resolvePostLoginRoute(data.user?.id)
+          router.push(nextPath)
         }
-        else router.push(redirect)
       }
     } finally {
       setLoading(false)
