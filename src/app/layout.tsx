@@ -23,6 +23,13 @@ export const metadata: Metadata = {
     title: 'AI for Beginners – Practical AI Skills',
     description: 'Join 500+ Kenyans mastering AI for income and career growth.',
     type: 'website',
+    images: [
+      {
+        url: '/og-image.svg',
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
 }
 
