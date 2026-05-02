@@ -42,14 +42,17 @@ export default function LoginPageClient() {
     e.preventDefault()
     setLoading(true)
     try {
+      const email = form.email.trim().toLowerCase()
+      const password = form.password.trim()
+
       if (tab === 'signup') {
         const registerResponse = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: form.name,
-            email: form.email,
-            password: form.password,
+            email,
+            password,
           }),
         })
 
@@ -64,8 +67,8 @@ export default function LoginPageClient() {
         } else {
           await new Promise((resolve) => setTimeout(resolve, 500))
           const { error } = await supabase.auth.signInWithPassword({
-            email: form.email,
-            password: form.password,
+            email,
+            password,
           })
 
           if (error) {
@@ -78,16 +81,17 @@ export default function LoginPageClient() {
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
-          email: form.email,
-          password: form.password,
+          email,
+          password,
         })
 
         if (error) {
-          if (error.message.toLowerCase().includes('invalid login credentials')) {
+          const message = error.message.toLowerCase()
+          if (message.includes('invalid login credentials') || error.status === 400) {
             const checkResponse = await fetch('/api/auth/check-email', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: form.email }),
+              body: JSON.stringify({ email }),
             })
 
             const checkResult = await checkResponse.json()
