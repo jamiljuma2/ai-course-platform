@@ -27,10 +27,20 @@ export default function AdminDashboard() {
   const [adminKey, setAdminKey] = useState('')
   const [authed, setAuthed] = useState(false)
   const [meetingTitle, setMeetingTitle] = useState('')
-  const [meetingWhen, setMeetingWhen] = useState('')
+  const [meetingStartTime, setMeetingStartTime] = useState('')
+  const [meetingDuration, setMeetingDuration] = useState('60')
   const [meetingLink, setMeetingLink] = useState(process.env.NEXT_PUBLIC_GOOGLE_MEET_LINK || '')
   const [notifyUsers, setNotifyUsers] = useState(true)
   const [certEmail, setCertEmail] = useState('')
+
+  const meetingEndTime = (() => {
+    const start = new Date(meetingStartTime)
+    const duration = Number(meetingDuration)
+    if (!meetingStartTime || Number.isNaN(start.getTime()) || !Number.isFinite(duration) || duration <= 0) {
+      return ''
+    }
+    return new Date(start.getTime() + duration * 60 * 1000).toLocaleString()
+  })()
 
   const fetchStats = async () => {
     setLoading(true)
@@ -59,12 +69,19 @@ export default function AdminDashboard() {
       const res = await fetch('/api/admin/schedule', {
         method: 'POST',
         headers: { 'x-admin-key': adminKey, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: meetingTitle, scheduled_at: meetingWhen, meet_link: meetingLink, notify: notifyUsers }),
+        body: JSON.stringify({
+          title: meetingTitle,
+          start_time: meetingStartTime,
+          duration_minutes: Number(meetingDuration),
+          meet_link: meetingLink,
+          notify: notifyUsers,
+        }),
       })
       if (res.ok) {
         alert('Meeting scheduled')
         setMeetingTitle('')
-        setMeetingWhen('')
+        setMeetingStartTime('')
+        setMeetingDuration('60')
       } else {
         const err = await res.json()
         alert(err?.error || 'Failed')
@@ -171,7 +188,13 @@ export default function AdminDashboard() {
               <div className="card">
                 <h3 className="text-lg font-bold text-white mb-3">Schedule Live Session</h3>
                 <input className="w-full mb-2 bg-dark-800 p-2 rounded" placeholder="Title" value={meetingTitle} onChange={e=>setMeetingTitle(e.target.value)} />
-                <input className="w-full mb-2 bg-dark-800 p-2 rounded" placeholder="YYYY-MM-DDTHH:MM" value={meetingWhen} onChange={e=>setMeetingWhen(e.target.value)} />
+                <label className="block text-xs text-dark-400 mb-1">Start Time</label>
+                <input type="datetime-local" className="w-full mb-2 bg-dark-800 p-2 rounded" value={meetingStartTime} onChange={e=>setMeetingStartTime(e.target.value)} />
+                <label className="block text-xs text-dark-400 mb-1">Duration (minutes)</label>
+                <input type="number" min="1" className="w-full mb-2 bg-dark-800 p-2 rounded" value={meetingDuration} onChange={e=>setMeetingDuration(e.target.value)} />
+                <div className="w-full mb-2 bg-dark-800 p-2 rounded text-dark-300 text-sm">
+                  End Time: {meetingEndTime || 'Auto-calculated after duration is set'}
+                </div>
                 <input className="w-full mb-2 bg-dark-800 p-2 rounded" placeholder="Meet link" value={meetingLink} onChange={e=>setMeetingLink(e.target.value)} />
                 <div className="flex items-center gap-2 mb-3">
                   <input id="notify" type="checkbox" checked={notifyUsers} onChange={e=>setNotifyUsers(e.target.checked)} />

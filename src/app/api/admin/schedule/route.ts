@@ -11,17 +11,34 @@ export async function POST(req: NextRequest) {
   if (!verifyAdmin(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json().catch(() => ({}))
-  const { title, description, scheduled_at, meet_link, notify } = body
+  const { title, description, start_time, duration_minutes, meet_link, notify } = body
 
-  if (!title || !scheduled_at) {
-    return NextResponse.json({ error: 'Missing title or scheduled_at' }, { status: 400 })
+  if (!title || !start_time || !duration_minutes) {
+    return NextResponse.json({ error: 'Missing title, start_time, or duration_minutes' }, { status: 400 })
   }
+
+  const parsedStartTime = new Date(start_time)
+  const parsedDurationMinutes = Number(duration_minutes)
+
+  if (Number.isNaN(parsedStartTime.getTime()) || !Number.isFinite(parsedDurationMinutes) || parsedDurationMinutes <= 0) {
+    return NextResponse.json({ error: 'Invalid start_time or duration_minutes' }, { status: 400 })
+  }
+
+  const endTime = new Date(parsedStartTime.getTime() + parsedDurationMinutes * 60 * 1000)
 
   const supabase = createAdminServerClient()
 
   const { data, error } = await supabase
     .from('meetings')
-    .insert({ title, description: description || null, scheduled_at, meet_link: meet_link || null })
+    .insert({
+      title,
+      description: description || null,
+      scheduled_at: parsedStartTime.toISOString(),
+      start_time: parsedStartTime.toISOString(),
+      duration_minutes: parsedDurationMinutes,
+      end_time: endTime.toISOString(),
+      meet_link: meet_link || null,
+    })
     .select()
     .single()
 
