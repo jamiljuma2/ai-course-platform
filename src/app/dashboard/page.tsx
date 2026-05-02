@@ -20,6 +20,12 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single()
 
+  const authRole = user.user_metadata?.role
+
+  if (profile?.role === 'admin' || authRole === 'admin') {
+    redirect('/admin')
+  }
+
   // Fetch enrollment (try to find any active enrollment, or return null)
   let enrollment = null
   try {

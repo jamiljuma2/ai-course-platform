@@ -19,7 +19,11 @@ export default function LoginPageClient() {
 
   // removed magic-link helper: using password reset flow instead
 
-  const resolvePostLoginRoute = async (userId?: string | null, fallbackPath = redirect) => {
+  const resolvePostLoginRoute = async (
+    userId?: string | null,
+    fallbackPath = redirect,
+    authRole?: string | null,
+  ) => {
     if (!userId) return fallbackPath
 
     const { data: profile } = await supabase
@@ -28,7 +32,7 @@ export default function LoginPageClient() {
       .eq('id', userId)
       .maybeSingle()
 
-    if (profile?.role === 'admin') {
+    if (profile?.role === 'admin' || authRole === 'admin') {
       return '/admin'
     }
 
@@ -92,7 +96,7 @@ export default function LoginPageClient() {
             setTab('login')
           } else {
             toast.success('Account created successfully')
-            const nextPath = await resolvePostLoginRoute(data.user?.id)
+            const nextPath = await resolvePostLoginRoute(data.user?.id, redirect, data.user?.user_metadata?.role)
             router.push(nextPath)
           }
         }
@@ -123,7 +127,7 @@ export default function LoginPageClient() {
             toast.error(error.message)
           }
         } else {
-          const nextPath = await resolvePostLoginRoute(data.user?.id)
+          const nextPath = await resolvePostLoginRoute(data.user?.id, redirect, data.user?.user_metadata?.role)
           router.push(nextPath)
         }
       }
