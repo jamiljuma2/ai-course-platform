@@ -32,15 +32,19 @@ export async function POST(req: NextRequest) {
 
   if (notify) {
     try {
-      // fetch enrolled users with course access
-      const { data: users } = await supabase
+      const { data: enrollments } = await supabase
         .from('enrollments')
-        .select('users(id, name, email)')
+        .select('user_id')
         .eq('course_access', true)
 
-      if (users && users.length) {
-        for (const u of users) {
-          const user = u.users
+      if (enrollments && enrollments.length) {
+        for (const enrollment of enrollments) {
+          const { data: user } = await supabase
+            .from('users')
+            .select('id, name, email, role, created_at, phone, avatar_url')
+            .eq('id', enrollment.user_id)
+            .maybeSingle()
+
           if (user?.email) {
             await sendMeetingNotification(user, data)
           }
