@@ -77,7 +77,7 @@ export default function HeroSection() {
         </div>
 
         {/* Floating card: static & centered on mobile, floating on desktop */}
-        <div className="absolute right-4 top-36 sm:top-1/2 sm:-translate-y-1/2 max-w-[320px] w-full sm:w-80 mt-0 mx-auto lg:mx-0">
+        <div className="absolute right-4 bottom-8 sm:top-1/2 sm:bottom-auto sm:-translate-y-1/2 max-w-[320px] w-full sm:w-80 mt-0 mx-auto lg:mx-0">
           <div className="card glow-brand animate-float">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-brand-500/20 flex items-center justify-center">
