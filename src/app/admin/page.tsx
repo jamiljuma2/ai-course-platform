@@ -54,8 +54,9 @@ export default function AdminDashboard() {
   const [students, setStudents] = useState<Student[]>([])
   const [modules, setModules] = useState<Module[]>([])
   const [selectedStudent, setSelectedStudent] = useState('')
-  const [selectedModule, setSelectedModule] = useState('')
+  const [completedLessonIds, setCompletedLessonIds] = useState<string[]>([])
   const [markingProgress, setMarkingProgress] = useState(false)
+  const [progressLoading, setProgressLoading] = useState(false)
 
   const meetingEndTime = (() => {
     const start = new Date(meetingStartTime)
@@ -98,6 +99,26 @@ export default function AdminDashboard() {
       }
     } catch (e) {
       console.error('Error fetching students/modules:', e)
+    }
+  }
+
+  const fetchStudentProgress = async (studentId: string) => {
+    setProgressLoading(true)
+    try {
+      const res = await fetch(`/api/admin/student-progress?studentId=${encodeURIComponent(studentId)}`, {
+        headers: { 'x-admin-key': adminKey }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setCompletedLessonIds(data.completedLessonIds || [])
+      } else {
+        setCompletedLessonIds([])
+      }
+    } catch (e) {
+      console.error('Error fetching student progress:', e)
+      setCompletedLessonIds([])
+    } finally {
+      setProgressLoading(false)
     }
   }
 
@@ -149,6 +170,48 @@ export default function AdminDashboard() {
       }
     } catch (e) {
       alert('Failed to release certificate')
+    }
+  }
+
+  const toggleLesson = (lessonId: string) => {
+    setCompletedLessonIds(current => {
+      if (current.includes(lessonId)) {
+        return current.filter(id => id !== lessonId)
+      }
+      return [...current, lessonId]
+    })
+  }
+
+  const saveSelectedProgress = async () => {
+    if (!selectedStudent) {
+      alert('Please select a student')
+      return
+    }
+
+    setMarkingProgress(true)
+    try {
+      const allLessonIds = modules.flatMap(module => module.lessons.map(lesson => lesson.id))
+      const res = await fetch('/api/admin/mark-progress', {
+        method: 'POST',
+        headers: { 'x-admin-key': adminKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: selectedStudent,
+          lessonIds: allLessonIds,
+          completedLessonIds,
+          batch: true,
+        }),
+      })
+
+      if (res.ok) {
+        alert('Progress saved')
+      } else {
+        const err = await res.json()
+        alert(err?.error || 'Failed to save progress')
+      }
+    } catch (e) {
+      alert('Failed to save progress')
+    } finally {
+      setMarkingProgress(false)
     }
   }
 
@@ -285,7 +348,14 @@ export default function AdminDashboard() {
                 <select 
                   className="w-full mb-2 bg-dark-800 p-2 rounded text-white" 
                   value={selectedStudent}
-                  onChange={e => setSelectedStudent(e.target.value)}
+                  onChange={e => {
+                    const nextStudent = e.target.value
+                    setSelectedStudent(nextStudent)
+                    setCompletedLessonIds([])
+                    if (nextStudent) {
+                      fetchStudentProgress(nextStudent)
+                    }
+                  }}
                 >
                   <option value="">Select student...</option>
                   {students.map(s => (
@@ -293,34 +363,61 @@ export default function AdminDashboard() {
                   ))}
                 </select>
 
-                <label className="block text-xs text-dark-400 mb-1">Module & Lessons</label>
-                <select 
-                  className="w-full mb-2 bg-dark-800 p-2 rounded text-white"
-                  value={selectedModule}
-                  onChange={e => setSelectedModule(e.target.value)}
-                >
-                  <option value="">Select module...</option>
-                  {modules.map(m => (
-                    <option key={m.id} value={m.id}>{m.order_index}. {m.title}</option>
-                  ))}
-                </select>
+                <div className="flex items-center justify-between mb-3">
+                  <label className="block text-xs text-dark-400">All Modules</label>
+                  <button
+                    onClick={saveSelectedProgress}
+                    disabled={markingProgress || progressLoading || !selectedStudent}
+                    className="btn-primary text-sm disabled:opacity-50"
+                  >
+                    {markingProgress ? 'Saving...' : 'Save Progress'}
+                  </button>
+                </div>
 
-                {selectedModule && (
-                  <div className="mb-3 max-h-48 overflow-y-auto">
-                    {modules
-                      .find(m => m.id === selectedModule)
-                      ?.lessons.map(lesson => (
-                        <div key={lesson.id} className="flex items-center gap-2 py-1 mb-1">
-                          <button 
-                            onClick={() => markLessonComplete(lesson.id)}
-                            disabled={markingProgress || !selectedStudent}
-                            className="text-xs btn-secondary py-1 px-2 w-full text-left disabled:opacity-50"
-                          >
-                            ✓ {lesson.order_index}. {lesson.title}
-                          </button>
+                <div className="mb-3 max-h-[32rem] overflow-y-auto space-y-4 pr-1">
+                  {modules.map(module => (
+                    <div key={module.id} className="rounded-xl border border-dark-700 bg-dark-800/60 p-3">
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <div className="text-sm font-semibold text-white">
+                            {module.order_index}. {module.title}
+                          </div>
+                          <div className="text-xs text-dark-400">{module.lessons.length} lessons</div>
                         </div>
-                      ))}
-                  </div>
+                      </div>
+                      <div className="space-y-2">
+                        {module.lessons.map(lesson => {
+                          const isCompleted = completedLessonIds.includes(lesson.id)
+                          return (
+                            <button
+                              key={lesson.id}
+                              type="button"
+                              onClick={() => toggleLesson(lesson.id)}
+                              disabled={!selectedStudent}
+                              className={`w-full flex items-center gap-3 rounded-lg border px-3 py-2 text-left text-sm transition-colors disabled:opacity-50 ${
+                                isCompleted
+                                  ? 'border-brand-500 bg-brand-500/10 text-white'
+                                  : 'border-dark-700 bg-dark-900/60 text-dark-300 hover:border-dark-500'
+                              }`}
+                            >
+                              <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border text-[10px] ${
+                                isCompleted ? 'border-brand-500 bg-brand-500 text-white' : 'border-dark-500 text-transparent'
+                              }`}>
+                                ✓
+                              </span>
+                              <span className="flex-1">
+                                {lesson.order_index}. {lesson.title}
+                              </span>
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {!selectedStudent && (
+                  <div className="text-xs text-dark-400">Select a student to load and mark completed lessons.</div>
                 )}
               </div>
             </div>

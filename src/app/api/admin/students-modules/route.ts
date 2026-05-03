@@ -41,8 +41,8 @@ export async function GET(req: NextRequest) {
   // Map to simple structure
   const students = enrollments.map(e => ({
     id: e.user_id,
-    name: e.users?.name || 'Unknown',
-    email: e.users?.email || '',
+    name: Array.isArray(e.users) ? e.users[0]?.name || 'Unknown' : e.users?.name || 'Unknown',
+    email: Array.isArray(e.users) ? e.users[0]?.email || '' : e.users?.email || '',
   }))
 
   return NextResponse.json({ students, modules })
