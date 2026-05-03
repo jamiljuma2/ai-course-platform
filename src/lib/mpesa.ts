@@ -12,6 +12,20 @@ const BASE_URL = MPESA_ENV === 'production'
   ? 'https://api.safaricom.co.ke'
   : 'https://sandbox.safaricom.co.ke'
 
+function hasDarajaConfig() {
+  return Boolean(
+    process.env.MPESA_CONSUMER_KEY &&
+    process.env.MPESA_CONSUMER_SECRET &&
+    process.env.MPESA_SHORTCODE &&
+    process.env.MPESA_PASSKEY &&
+    process.env.MPESA_CALLBACK_URL
+  )
+}
+
+function hasLipanaConfig() {
+  return Boolean(process.env.LIPANA_API_KEY)
+}
+
 // Generate OAuth access token
 async function getAccessToken(): Promise<string> {
   const credentials = Buffer.from(
@@ -74,9 +88,16 @@ export async function initiateSTKPush(
   req: MpesaSTKPushRequest
 ): Promise<MpesaSTKPushResponse> {
   // If Lipana is configured, prefer Lipana STK push (new provider)
-  if (process.env.LIPANA_API_KEY) {
+  if (hasLipanaConfig()) {
     return await initiateLipanaSTKPush(req)
   }
+
+  if (!hasDarajaConfig()) {
+    throw new Error(
+      'Payment provider is not configured. Set LIPANA_API_KEY or MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET, MPESA_SHORTCODE, MPESA_PASSKEY, and MPESA_CALLBACK_URL.'
+    )
+  }
+
   const accessToken = await getAccessToken()
   const timestamp = getTimestamp()
   const password = generatePassword(timestamp)
@@ -142,16 +163,25 @@ async function initiateLipanaSTKPush(
     callbackURL: callbackUrl,
   }
 
-  const res = await axios.post(
-    'https://api.lipana.dev/v1/transactions/push-stk',
-    requestPayload,
-    {
-      headers: {
-        'x-api-key': process.env.LIPANA_API_KEY as string,
-        'Content-Type': 'application/json',
-      },
+  let res
+  try {
+    res = await axios.post(
+      'https://api.lipana.dev/v1/transactions/push-stk',
+      requestPayload,
+      {
+        headers: {
+          'x-api-key': process.env.LIPANA_API_KEY as string,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      const lipanaMessage = error.response?.data?.message || error.response?.data?.error || error.message
+      throw new Error(`Lipana STK push failed: ${lipanaMessage}`)
     }
-  )
+    throw error
+  }
 
   // Map Lipana response to the shape callers expect (best-effort)
   const body = res.data || {}
