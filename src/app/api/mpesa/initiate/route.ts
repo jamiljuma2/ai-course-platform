@@ -166,7 +166,6 @@ export async function POST(req: NextRequest) {
       error && typeof error === 'object' && 'response' in error
         ? (error as { response?: { data?: { error?: string; message?: string } } }).response?.data?.error ||
           (error as { response?: { data?: { error?: string; message?: string } } }).response?.data?.message ||
-          (error as Error).message ||
           'Payment initiation failed'
         : error instanceof Error
           ? error.message
