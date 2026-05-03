@@ -31,7 +31,7 @@ export default function HeroSection() {
       <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl" />
       <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-brand-300/5 rounded-full blur-3xl" />
 
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-20">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
         <div className="max-w-4xl">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-sm font-medium mb-8 animate-fade-in">
@@ -76,8 +76,8 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* Floating card (desktop only) */}
-        <div className="hidden lg:block absolute right-4 top-1/2 -translate-y-1/2 w-80">
+        {/* Floating card: static & centered on mobile, floating on desktop */}
+        <div className="absolute right-4 top-36 sm:top-1/2 sm:-translate-y-1/2 max-w-[320px] w-full sm:w-80 mt-0 mx-auto lg:mx-0">
           <div className="card glow-brand animate-float">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-brand-500/20 flex items-center justify-center">
