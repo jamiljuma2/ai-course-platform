@@ -41,8 +41,14 @@ export async function GET(req: NextRequest) {
   // Map to simple structure
   const students = enrollments.map(e => ({
     id: e.user_id,
-    name: Array.isArray(e.users) ? e.users[0]?.name || 'Unknown' : e.users?.name || 'Unknown',
-    email: Array.isArray(e.users) ? e.users[0]?.email || '' : e.users?.email || '',
+    name: (() => {
+      const user = Array.isArray(e.users) ? e.users[0] : e.users
+      return (user as { name?: string } | null | undefined)?.name || 'Unknown'
+    })(),
+    email: (() => {
+      const user = Array.isArray(e.users) ? e.users[0] : e.users
+      return (user as { email?: string } | null | undefined)?.email || ''
+    })(),
   }))
 
   return NextResponse.json({ students, modules })
