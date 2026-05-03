@@ -276,13 +276,13 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-dark-900 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-dark-900 p-3 sm:p-6 lg:p-8 overflow-x-hidden">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
-            <p className="text-dark-400 text-sm mt-1">AI for Beginners Course</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">Admin Dashboard</h1>
+            <p className="text-dark-400 text-xs sm:text-sm mt-1">AI for Beginners Course</p>
           </div>
           <div className="flex gap-3">
             <button onClick={fetchStats} className="btn-secondary text-sm">
@@ -297,7 +297,7 @@ export default function AdminDashboard() {
         {/* Stats */}
         {stats && (
           <>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
               {[
                 { label: 'Total Students', value: stats.totalUsers, icon: Users, color: 'text-blue-400' },
                 { label: 'Active Enrollments', value: stats.totalEnrollments, icon: BookOpen, color: 'text-green-400' },
@@ -313,7 +313,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Meetings + Certificates + Mark Progress */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-8">
               <div className="card">
                 <h3 className="text-lg font-bold text-white mb-3">Schedule Live Session</h3>
                 <input className="w-full mb-2 bg-dark-800 p-2 rounded" placeholder="Title" value={meetingTitle} onChange={e=>setMeetingTitle(e.target.value)} />
@@ -340,85 +340,6 @@ export default function AdminDashboard() {
                 <div className="flex gap-2">
                   <button onClick={releaseCertificate} className="btn-primary">Release Certificate</button>
                 </div>
-              </div>
-
-              <div className="card">
-                <h3 className="text-lg font-bold text-white mb-3">Mark Lesson Complete</h3>
-                <label className="block text-xs text-dark-400 mb-1">Student</label>
-                <select 
-                  className="w-full mb-2 bg-dark-800 p-2 rounded text-white" 
-                  value={selectedStudent}
-                  onChange={e => {
-                    const nextStudent = e.target.value
-                    setSelectedStudent(nextStudent)
-                    setCompletedLessonIds([])
-                    if (nextStudent) {
-                      fetchStudentProgress(nextStudent)
-                    }
-                  }}
-                >
-                  <option value="">Select student...</option>
-                  {students.map(s => (
-                    <option key={s.id} value={s.id}>{s.name} ({s.email})</option>
-                  ))}
-                </select>
-
-                <div className="flex items-center justify-between mb-3">
-                  <label className="block text-xs text-dark-400">All Modules</label>
-                  <button
-                    onClick={saveSelectedProgress}
-                    disabled={markingProgress || progressLoading || !selectedStudent}
-                    className="btn-primary text-sm disabled:opacity-50"
-                  >
-                    {markingProgress ? 'Saving...' : 'Save Progress'}
-                  </button>
-                </div>
-
-                <div className="mb-3 max-h-[32rem] overflow-y-auto space-y-4 pr-1">
-                  {modules.map(module => (
-                    <div key={module.id} className="rounded-xl border border-dark-700 bg-dark-800/60 p-3">
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <div className="text-sm font-semibold text-white">
-                            {module.order_index}. {module.title}
-                          </div>
-                          <div className="text-xs text-dark-400">{module.lessons.length} lessons</div>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        {module.lessons.map(lesson => {
-                          const isCompleted = completedLessonIds.includes(lesson.id)
-                          return (
-                            <button
-                              key={lesson.id}
-                              type="button"
-                              onClick={() => toggleLesson(lesson.id)}
-                              disabled={!selectedStudent}
-                              className={`w-full flex items-center gap-3 rounded-lg border px-3 py-2 text-left text-sm transition-colors disabled:opacity-50 ${
-                                isCompleted
-                                  ? 'border-brand-500 bg-brand-500/10 text-white'
-                                  : 'border-dark-700 bg-dark-900/60 text-dark-300 hover:border-dark-500'
-                              }`}
-                            >
-                              <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border text-[10px] ${
-                                isCompleted ? 'border-brand-500 bg-brand-500 text-white' : 'border-dark-500 text-transparent'
-                              }`}>
-                                ✓
-                              </span>
-                              <span className="flex-1">
-                                {lesson.order_index}. {lesson.title}
-                              </span>
-                            </button>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {!selectedStudent && (
-                  <div className="text-xs text-dark-400">Select a student to load and mark completed lessons.</div>
-                )}
               </div>
             </div>
 
