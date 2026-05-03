@@ -1,7 +1,7 @@
 'use client'
 import { ArrowRight, Star, Users, BookOpen, Award } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/client'
 
 const stats = [
   { icon: Users, value: '500+', label: 'Students Enrolled' },
@@ -35,6 +35,7 @@ export default function HeroSection() {
   useEffect(() => {
     const fetchProgress = async () => {
       try {
+        const supabase = createClient()
         const { data: { session } } = await supabase.auth.getSession()
         if (!session?.user?.id) {
           setLoading(false)
