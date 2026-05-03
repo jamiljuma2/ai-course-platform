@@ -1,6 +1,6 @@
 # AI for Beginners — Course Platform
 
-A production-ready full-stack online course platform with M-Pesa payments, mini-LMS, and email automation. Built for the Kenyan market.
+A production-ready full-stack online course platform with M-Pesa payments, mini-LMS, and email automation. Built for the Kenyan market and priced at KES 3,000.
 
 ---
 
