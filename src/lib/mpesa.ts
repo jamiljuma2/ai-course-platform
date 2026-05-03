@@ -45,6 +45,15 @@ function generatePassword(timestamp: string): string {
   return Buffer.from(raw).toString('base64')
 }
 
+function getCallbackUrl(): string {
+  return (
+    process.env.MPESA_CALLBACK_URL ||
+    (process.env.NEXT_PUBLIC_APP_URL
+      ? `${process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '')}/api/webhook/mpesa`
+      : 'http://localhost:3000/api/webhook/mpesa')
+  )
+}
+
 // Format phone to 254XXXXXXXXX
 export function formatPhone(phone: string): string {
   const digits = phone.replace(/\D/g, '')
@@ -119,9 +128,23 @@ async function initiateLipanaSTKPush(
   const amount = Math.round(req.amount)
   if (amount < 10) throw new Error('Minimum amount is Ksh 10')
 
+  const callbackUrl = getCallbackUrl()
+  const requestPayload = {
+    phone,
+    amount,
+    description: req.description,
+    account_ref: req.accountRef,
+    accountRef: req.accountRef,
+    account_reference: req.accountRef,
+    reference: req.accountRef,
+    callback_url: callbackUrl,
+    callbackUrl,
+    callbackURL: callbackUrl,
+  }
+
   const res = await axios.post(
     'https://api.lipana.dev/v1/transactions/push-stk',
-    { phone, amount },
+    requestPayload,
     {
       headers: {
         'x-api-key': process.env.LIPANA_API_KEY as string,

@@ -162,7 +162,15 @@ export async function POST(req: NextRequest) {
 
   } catch (error: unknown) {
     console.error('STK Push error:', error)
-    const message = error instanceof Error ? error.message : 'Payment initiation failed'
+    const message =
+      error && typeof error === 'object' && 'response' in error
+        ? (error as { response?: { data?: { error?: string; message?: string } } }).response?.data?.error ||
+          (error as { response?: { data?: { error?: string; message?: string } } }).response?.data?.message ||
+          (error as Error).message ||
+          'Payment initiation failed'
+        : error instanceof Error
+          ? error.message
+          : 'Payment initiation failed'
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }
