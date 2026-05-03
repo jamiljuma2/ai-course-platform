@@ -35,10 +35,10 @@ export default function PricingSection() {
             <div className="text-dark-400 text-sm mb-2">One-time payment</div>
             <div className="flex items-baseline justify-center gap-2">
               <span className="text-dark-400 text-2xl">KES</span>
-              <span className="text-6xl font-bold text-white">2,500</span>
+              <span className="text-6xl font-bold text-white">3,000</span>
             </div>
             <div className="text-dark-400 text-sm mt-2 line-through">KES 7,500</div>
-            <div className="text-brand-400 text-sm font-medium">67% off — Limited time offer</div>
+            <div className="text-brand-400 text-sm font-medium">60% off — Limited time offer</div>
           </div>
 
           {/* Features */}

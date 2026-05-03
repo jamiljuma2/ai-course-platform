@@ -247,7 +247,7 @@ export default function LoginPageClient() {
           <p className="text-center text-dark-500 text-xs mt-4">
             Don't have access?{' '}
             <Link href="/#enroll" className="text-brand-400 hover:underline">
-              Enroll for KES 2,500
+              Enroll for KES 3,000
             </Link>
           </p>
         </div>

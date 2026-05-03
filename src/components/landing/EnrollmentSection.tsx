@@ -161,7 +161,7 @@ export default function EnrollmentSection() {
                   <div className="text-sm text-white font-medium">AI for Beginners Course</div>
                   <div className="text-xs text-dark-400">Lifetime access · 8 modules</div>
                 </div>
-                <div className="text-xl font-bold text-brand-400">KES 2,500</div>
+                <div className="text-xl font-bold text-brand-400">KES 3,000</div>
               </div>
 
               <button
@@ -172,7 +172,7 @@ export default function EnrollmentSection() {
                 {loading ? (
                   <><Loader2 size={18} className="animate-spin" /> Initiating Payment...</>
                 ) : (
-                  <>Pay KES 2,500 via M-Pesa <ArrowRight size={18} /></>
+                  <>Pay KES 3,000 via M-Pesa <ArrowRight size={18} /></>
                 )}
               </button>
 

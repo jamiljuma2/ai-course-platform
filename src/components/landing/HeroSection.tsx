@@ -36,7 +36,7 @@ export default function HeroSection() {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-sm font-medium mb-8 animate-fade-in">
             <span className="w-2 h-2 rounded-full bg-brand-400 animate-pulse-slow" />
-            Now enrolling — KES 2,500 · Pay with M-Pesa
+            Now enrolling — KES 3,000 · Pay with M-Pesa
           </div>
 
           {/* Headline */}
@@ -54,7 +54,7 @@ export default function HeroSection() {
           {/* CTAs */}
           <div className="flex flex-wrap gap-4 mb-16 animate-fade-up" style={{ animationDelay: '0.2s' }}>
             <a href="#enroll" className="btn-primary glow-brand text-lg">
-              Enroll for KES 2,500
+              Enroll for KES 3,000
               <ArrowRight size={20} />
             </a>
             <a href="#modules" className="btn-secondary text-lg">

@@ -53,7 +53,7 @@ export default async function DashboardPage() {
               Enroll in <span className="text-brand-400 font-semibold">AI for Beginners</span> to get started:
             </p>
             <Link href="/#enroll" className="btn-primary w-full inline-block mb-4">
-              Enroll for KES 2,500
+              Enroll for KES 3,000
             </Link>
             <Link href="/" className="btn-secondary w-full inline-block">
               View Course Info

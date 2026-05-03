@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS public.courses (
   title       TEXT NOT NULL,
   slug        TEXT UNIQUE NOT NULL,
   description TEXT,
-  price_kes   INTEGER NOT NULL DEFAULT 2500,
+  price_kes   INTEGER NOT NULL DEFAULT 3000,
   thumbnail   TEXT,
   is_active   BOOLEAN DEFAULT true,
   created_at  TIMESTAMPTZ DEFAULT NOW()
@@ -39,7 +39,7 @@ INSERT INTO public.courses (title, slug, description, price_kes) VALUES
 ('AI for Beginners: Practical Skills for Students, Freelancers & Professionals',
  'ai-for-beginners',
  'Master AI tools to earn more, work smarter, and build a profitable digital career — starting today.',
- 2500)
+ 3000)
 ON CONFLICT (slug) DO NOTHING;
 
 -- ============================================================
