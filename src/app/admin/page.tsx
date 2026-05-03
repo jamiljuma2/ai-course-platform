@@ -21,6 +21,25 @@ interface Stats {
   }>
 }
 
+interface Student {
+  id: string
+  name: string
+  email: string
+}
+
+interface Lesson {
+  id: string
+  title: string
+  order_index: number
+}
+
+interface Module {
+  id: string
+  title: string
+  order_index: number
+  lessons: Lesson[]
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
@@ -32,6 +51,11 @@ export default function AdminDashboard() {
   const [meetingLink, setMeetingLink] = useState(process.env.NEXT_PUBLIC_GOOGLE_MEET_LINK || '')
   const [notifyUsers, setNotifyUsers] = useState(true)
   const [certEmail, setCertEmail] = useState('')
+  const [students, setStudents] = useState<Student[]>([])
+  const [modules, setModules] = useState<Module[]>([])
+  const [selectedStudent, setSelectedStudent] = useState('')
+  const [selectedModule, setSelectedModule] = useState('')
+  const [markingProgress, setMarkingProgress] = useState(false)
 
   const meetingEndTime = (() => {
     const start = new Date(meetingStartTime)
@@ -52,11 +76,28 @@ export default function AdminDashboard() {
         const data = await res.json()
         setStats(data)
         setAuthed(true)
+        // Also fetch students and modules
+        fetchStudentsModules()
       } else {
         alert('Invalid admin key')
       }
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchStudentsModules = async () => {
+    try {
+      const res = await fetch('/api/admin/students-modules', {
+        headers: { 'x-admin-key': adminKey }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setStudents(data.students)
+        setModules(data.modules)
+      }
+    } catch (e) {
+      console.error('Error fetching students/modules:', e)
     }
   }
 
@@ -108,6 +149,31 @@ export default function AdminDashboard() {
       }
     } catch (e) {
       alert('Failed to release certificate')
+    }
+  }
+
+  const markLessonComplete = async (lessonId: string) => {
+    if (!selectedStudent) {
+      alert('Please select a student')
+      return
+    }
+    setMarkingProgress(true)
+    try {
+      const res = await fetch('/api/admin/mark-progress', {
+        method: 'POST',
+        headers: { 'x-admin-key': adminKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: selectedStudent, lessonId }),
+      })
+      if (res.ok) {
+        alert('Lesson marked as complete')
+      } else {
+        const err = await res.json()
+        alert(err?.error || 'Failed')
+      }
+    } catch (e) {
+      alert('Failed to mark progress')
+    } finally {
+      setMarkingProgress(false)
     }
   }
 
@@ -183,8 +249,8 @@ export default function AdminDashboard() {
               ))}
             </div>
 
-            {/* Meetings + Certificates */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-8">
+            {/* Meetings + Certificates + Mark Progress */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-8">
               <div className="card">
                 <h3 className="text-lg font-bold text-white mb-3">Schedule Live Session</h3>
                 <input className="w-full mb-2 bg-dark-800 p-2 rounded" placeholder="Title" value={meetingTitle} onChange={e=>setMeetingTitle(e.target.value)} />
@@ -211,6 +277,51 @@ export default function AdminDashboard() {
                 <div className="flex gap-2">
                   <button onClick={releaseCertificate} className="btn-primary">Release Certificate</button>
                 </div>
+              </div>
+
+              <div className="card">
+                <h3 className="text-lg font-bold text-white mb-3">Mark Lesson Complete</h3>
+                <label className="block text-xs text-dark-400 mb-1">Student</label>
+                <select 
+                  className="w-full mb-2 bg-dark-800 p-2 rounded text-white" 
+                  value={selectedStudent}
+                  onChange={e => setSelectedStudent(e.target.value)}
+                >
+                  <option value="">Select student...</option>
+                  {students.map(s => (
+                    <option key={s.id} value={s.id}>{s.name} ({s.email})</option>
+                  ))}
+                </select>
+
+                <label className="block text-xs text-dark-400 mb-1">Module & Lessons</label>
+                <select 
+                  className="w-full mb-2 bg-dark-800 p-2 rounded text-white"
+                  value={selectedModule}
+                  onChange={e => setSelectedModule(e.target.value)}
+                >
+                  <option value="">Select module...</option>
+                  {modules.map(m => (
+                    <option key={m.id} value={m.id}>{m.order_index}. {m.title}</option>
+                  ))}
+                </select>
+
+                {selectedModule && (
+                  <div className="mb-3 max-h-48 overflow-y-auto">
+                    {modules
+                      .find(m => m.id === selectedModule)
+                      ?.lessons.map(lesson => (
+                        <div key={lesson.id} className="flex items-center gap-2 py-1 mb-1">
+                          <button 
+                            onClick={() => markLessonComplete(lesson.id)}
+                            disabled={markingProgress || !selectedStudent}
+                            className="text-xs btn-secondary py-1 px-2 w-full text-left disabled:opacity-50"
+                          >
+                            ✓ {lesson.order_index}. {lesson.title}
+                          </button>
+                        </div>
+                      ))}
+                  </div>
+                )}
               </div>
             </div>
 
