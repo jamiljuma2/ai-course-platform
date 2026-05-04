@@ -17,19 +17,53 @@ export default function AssignmentPage() {
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [existingSubmission, setExistingSubmission] = useState<{ content: string; status: string } | null>(null)
+  const [accessDenied, setAccessDenied] = useState(false)
 
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      if (!user) {
+        setAccessDenied(true)
+        return
+      }
+
+      // Require an active enrollment before showing any lesson content
+      const { data: enrollment } = await supabase
+        .from('enrollments')
+        .select('course_id')
+        .eq('user_id', user.id)
+        .eq('course_access', true)
+        .single()
+
+      if (!enrollment) {
+        setAccessDenied(true)
+        return
+      }
 
       // Get lesson
       const { data: lessonData } = await supabase
         .from('lessons')
-        .select('*')
+        .select('*, module_id')
         .eq('id', lessonId)
         .single()
-      if (lessonData) setLesson(lessonData)
+
+      if (!lessonData) {
+        setAccessDenied(true)
+        return
+      }
+
+      const { data: moduleData } = await supabase
+        .from('modules')
+        .select('course_id')
+        .eq('id', lessonData.module_id)
+        .single()
+
+      if (!moduleData || moduleData.course_id !== enrollment.course_id) {
+        setAccessDenied(true)
+        return
+      }
+
+      setLesson(lessonData)
 
       // Check existing submission
       const { data: assignment } = await supabase
@@ -53,6 +87,23 @@ export default function AssignmentPage() {
     }
     load()
   }, [lessonId])
+
+  if (accessDenied) {
+    return (
+      <div className="min-h-screen bg-dark-900 flex items-center justify-center px-4">
+        <div className="card max-w-md text-center">
+          <ClipboardList size={48} className="text-brand-400 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-white mb-2">Enroll to view this lesson</h2>
+          <p className="text-dark-300 text-sm mb-6">
+            Lesson content is available only after enrollment.
+          </p>
+          <Link href="/dashboard" className="btn-primary w-full">
+            Go to Dashboard
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
