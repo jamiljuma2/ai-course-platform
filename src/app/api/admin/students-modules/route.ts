@@ -29,13 +29,46 @@ export async function GET(req: NextRequest) {
   // Get all modules for the course
   const { data: modules, error: modError } = await supabase
     .from('modules')
-    .select('id, title, order_index, lessons:lessons(id, title, order_index)')
+    .select('id, title, order_index')
     .eq('course_id', courseId)
     .eq('is_active', true)
     .order('order_index')
 
   if (modError) {
     return NextResponse.json({ error: modError.message }, { status: 500 })
+  }
+
+  // Get all lessons for each module
+  let modulesWithLessons = modules || []
+  if (modulesWithLessons.length > 0) {
+    const moduleIds = modulesWithLessons.map(m => m.id)
+    const { data: allLessons, error: lessonsError } = await supabase
+      .from('lessons')
+      .select('id, title, order_index, module_id')
+      .in('module_id', moduleIds)
+      .eq('is_active', true)
+      .order('order_index')
+
+    if (!lessonsError) {
+      // Group lessons by module_id
+      const lessonsByModule: Record<string, any[]> = {}
+      allLessons?.forEach(lesson => {
+        if (!lessonsByModule[lesson.module_id]) {
+          lessonsByModule[lesson.module_id] = []
+        }
+        lessonsByModule[lesson.module_id].push({
+          id: lesson.id,
+          title: lesson.title,
+          order_index: lesson.order_index
+        })
+      })
+
+      // Add lessons to each module
+      modulesWithLessons = modulesWithLessons.map(m => ({
+        ...m,
+        lessons: lessonsByModule[m.id] || []
+      }))
+    }
   }
 
   // Map to simple structure

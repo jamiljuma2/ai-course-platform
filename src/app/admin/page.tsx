@@ -54,6 +54,7 @@ export default function AdminDashboard() {
   const [students, setStudents] = useState<Student[]>([])
   const [modules, setModules] = useState<Module[]>([])
   const [selectedStudent, setSelectedStudent] = useState('')
+  const [selectedModule, setSelectedModule] = useState('')
   const [completedLessonIds, setCompletedLessonIds] = useState<string[]>([])
   const [markingProgress, setMarkingProgress] = useState(false)
   const [progressLoading, setProgressLoading] = useState(false)
@@ -240,6 +241,50 @@ export default function AdminDashboard() {
     }
   }
 
+  const markModuleComplete = async () => {
+    if (!selectedStudent) {
+      alert('Please select a student')
+      return
+    }
+    if (!selectedModule) {
+      alert('Please select a module')
+      return
+    }
+
+    const module = modules.find(m => m.id === selectedModule)
+    if (!module || !module.lessons) {
+      alert('Module or lessons not found')
+      return
+    }
+
+    const allLessonIds = module.lessons.map(l => l.id)
+    setMarkingProgress(true)
+    try {
+      const res = await fetch('/api/admin/mark-progress', {
+        method: 'POST',
+        headers: { 'x-admin-key': adminKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: selectedStudent,
+          lessonIds: allLessonIds,
+          completedLessonIds: allLessonIds,
+          batch: true,
+        }),
+      })
+
+      if (res.ok) {
+        alert(`Module "${module.title}" marked as complete for this student`)
+        setSelectedModule('')
+      } else {
+        const err = await res.json()
+        alert(err?.error || 'Failed to mark module complete')
+      }
+    } catch (e) {
+      alert('Failed to mark module complete')
+    } finally {
+      setMarkingProgress(false)
+    }
+  }
+
   const statusBadge = (status: string) => {
     const map: Record<string, { icon: React.ReactNode; cls: string }> = {
       completed: { icon: <CheckCircle size={12} />, cls: 'text-green-400 bg-green-400/10' },
@@ -313,7 +358,54 @@ export default function AdminDashboard() {
             </div>
 
             {/* Meetings + Certificates + Mark Progress */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-8">
+              <div className="card">
+                <h3 className="text-lg font-bold text-white mb-3">Mark Module Complete</h3>
+                <div className="mb-3">
+                  <label className="block text-xs text-dark-400 mb-1">Select Student</label>
+                  <select 
+                    value={selectedStudent} 
+                    onChange={e => {
+                      setSelectedStudent(e.target.value)
+                      setSelectedModule('')
+                      setCompletedLessonIds([])
+                    }}
+                    className="w-full bg-dark-800 border border-dark-600 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-brand-500"
+                  >
+                    <option value="">Choose a student...</option>
+                    {students.map(s => (
+                      <option key={s.id} value={s.id}>{s.name} ({s.email})</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-3">
+                  <label className="block text-xs text-dark-400 mb-1">Select Module</label>
+                  <select 
+                    value={selectedModule} 
+                    onChange={e => setSelectedModule(e.target.value)}
+                    disabled={!selectedStudent}
+                    className="w-full bg-dark-800 border border-dark-600 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-brand-500 disabled:opacity-50"
+                  >
+                    <option value="">Choose a module...</option>
+                    {modules.map(m => (
+                      <option key={m.id} value={m.id}>Module {m.order_index}: {m.title}</option>
+                    ))}
+                  </select>
+                </div>
+                {selectedModule && (
+                  <div className="mb-3 p-2 bg-dark-800 rounded text-xs text-dark-300">
+                    {modules.find(m => m.id === selectedModule)?.lessons.length || 0} lessons will be marked complete
+                  </div>
+                )}
+                <button 
+                  onClick={markModuleComplete} 
+                  disabled={!selectedStudent || !selectedModule || markingProgress}
+                  className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {markingProgress ? 'Marking...' : 'Mark Module Complete'}
+                </button>
+              </div>
+
               <div className="card">
                 <h3 className="text-lg font-bold text-white mb-3">Schedule Live Session</h3>
                 <input className="w-full mb-2 bg-dark-800 p-2 rounded" placeholder="Title" value={meetingTitle} onChange={e=>setMeetingTitle(e.target.value)} />
