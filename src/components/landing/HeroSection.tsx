@@ -99,8 +99,6 @@ export default function HeroSection() {
             setProgress({
               moduleName: module.title,
               currentModuleNum: module.order_index,
-              completedLessons: completedLessonNames,
-              totalLessons: totalCount,
               completionPercent: percent,
             })
             break
