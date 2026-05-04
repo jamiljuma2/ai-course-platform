@@ -15,8 +15,6 @@ const roles = ['Freelancers', 'Students', 'Entrepreneurs', 'Professionals']
 interface ProgressData {
   moduleName: string
   currentModuleNum: number
-  completedLessons: string[]
-  totalLessons: number
   completionPercent: number
 }
 
@@ -188,20 +186,20 @@ export default function HeroSection() {
                   </div>
                 </div>
                 <div className="space-y-2 mb-4">
-                  {progress.completedLessons.slice(0, 3).map((lesson, i) => (
-                    <div key={lesson} className="flex items-center gap-2 text-sm">
-                      <div className="w-4 h-4 rounded-full border flex items-center justify-center text-xs bg-brand-500 border-brand-500 text-white">
-                        ✓
-                      </div>
-                      <span className="text-white truncate">{lesson}</span>
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="w-4 h-4 rounded-full border flex items-center justify-center text-xs bg-brand-500 border-brand-500 text-white">
+                      ✓
                     </div>
-                  ))}
-                  {progress.totalLessons > progress.completedLessons.length && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <div className="w-4 h-4 rounded-full border border-dark-500" />
-                      <span className="text-dark-400">{progress.totalLessons - progress.completedLessons.length} more lessons</span>
-                    </div>
-                  )}
+                    <span className="text-white">Module progress unlocked</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="w-4 h-4 rounded-full border border-dark-500" />
+                    <span className="text-dark-400">Practical projects</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="w-4 h-4 rounded-full border border-dark-500" />
+                    <span className="text-dark-400">Lifetime access</span>
+                  </div>
                 </div>
                 <div className="bg-dark-700 rounded-full h-2">
                   <div className="bg-brand-500 h-2 rounded-full" style={{ width: `${progress.completionPercent}%` }} />
@@ -222,11 +220,11 @@ export default function HeroSection() {
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-2 text-sm">
                     <div className="w-4 h-4 rounded-full border border-dark-500" />
-                    <span className="text-dark-400">8 Modules</span>
+                    <span className="text-dark-400">8 structured modules</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <div className="w-4 h-4 rounded-full border border-dark-500" />
-                    <span className="text-dark-400">40+ Lessons</span>
+                    <span className="text-dark-400">Practical assignments</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <div className="w-4 h-4 rounded-full border border-dark-500" />

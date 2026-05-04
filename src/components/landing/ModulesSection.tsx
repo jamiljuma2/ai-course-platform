@@ -1,13 +1,12 @@
 'use client'
 import { useState } from 'react'
-import { ChevronDown, ChevronUp, BookOpen, Briefcase, Brain, Rocket, Settings, Code, TrendingUp, PenTool } from 'lucide-react'
+import { Briefcase, Brain, Rocket, Settings, Code, TrendingUp, PenTool } from 'lucide-react'
 
 const modules = [
   {
     num: 1, icon: Brain,
     title: 'Introduction to AI & Digital Economy',
     desc: 'Understand AI fundamentals, types, real-world use cases, and how AI is reshaping jobs and creating opportunities.',
-    lessons: ['What is AI?', 'Types of AI Systems', 'AI in Real Life (Kenya & Global)', 'Jobs AI Replaces vs Creates', 'The AI Tools Landscape'],
     practical: 'Identify 5 AI tools relevant to your work + write your personal AI opportunity statement',
     duration: '~3 hours',
   },
@@ -15,7 +14,6 @@ const modules = [
     num: 2, icon: Brain,
     title: 'Mastering ChatGPT',
     desc: 'Deep dive into prompt engineering, role-based prompting, custom GPTs, and building an AI assistant system.',
-    lessons: ['ChatGPT Setup & Models', 'The CRISPE Prompt Framework', 'Role-Based Prompting', 'Advanced Techniques', 'Custom GPTs', 'Common Mistakes'],
     practical: 'Build a custom AI assistant tailored to your niche or workflow',
     duration: '~5 hours',
   },
@@ -23,7 +21,6 @@ const modules = [
     num: 3, icon: PenTool,
     title: 'AI for Content Creation',
     desc: 'Use AI to write compelling content, manage social media, and grow any audience consistently.',
-    lessons: ['AI Writing Tools', 'Social Media Content at Scale', 'Blogging with AI', 'Audience Targeting', 'Tone & Voice Training'],
     practical: 'Create a 30-day content calendar with 30 pieces of AI-assisted content',
     duration: '~4 hours',
   },
@@ -31,7 +28,6 @@ const modules = [
     num: 4, icon: Briefcase,
     title: 'AI for Freelancing & Income',
     desc: 'Build a profitable freelance career on Fiverr and Upwork using AI to deliver faster, at higher quality.',
-    lessons: ['AI Freelance Opportunities', 'Fiverr Strategy with AI', 'Upwork Proposals with AI', 'AI Service Packages', 'Pricing & Positioning'],
     practical: 'Create and publish a freelance service offer using AI tools',
     duration: '~4 hours',
   },
@@ -39,7 +35,6 @@ const modules = [
     num: 5, icon: Rocket,
     title: 'AI for Business',
     desc: 'Generate business ideas, conduct market research, and build a brand using AI as your business analyst.',
-    lessons: ['Business Idea Generation', 'AI Market Research', 'Competitor Analysis', 'Branding with AI', 'Validating Your Concept'],
     practical: 'Build a complete business concept with research, branding, and go-to-market plan',
     duration: '~4 hours',
   },
@@ -47,7 +42,6 @@ const modules = [
     num: 6, icon: Settings,
     title: 'AI Automation',
     desc: 'Automate repetitive tasks using Zapier and Make, and build workflows that save 10+ hours per week.',
-    lessons: ['Introduction to Automation', 'Zapier Fundamentals', 'Make (Integromat) Basics', 'Common Automation Templates', 'AI + Automation Stacks'],
     practical: 'Build and deploy 2 real automations for your business or workflow',
     duration: '~5 hours',
   },
@@ -55,7 +49,6 @@ const modules = [
     num: 7, icon: Code,
     title: 'Building AI Tools',
     desc: 'Understand APIs, AI architecture, and how to design sellable AI-powered applications.',
-    lessons: ['What is an API?', 'Using AI APIs (OpenAI, Claude)', 'No-Code AI App Builders', 'System Architecture Basics', 'AI Product Thinking'],
     practical: 'Design a complete AI app concept with specs, user flow, and monetization plan',
     duration: '~5 hours',
   },
@@ -63,7 +56,6 @@ const modules = [
     num: 8, icon: TrendingUp,
     title: 'Monetization & Career Paths',
     desc: 'Turn your AI skills into sustainable income. Build a portfolio and create your personalized 30-day plan.',
-    lessons: ['AI Income Streams', 'Portfolio Building', 'LinkedIn for AI Professionals', 'Consulting with AI', 'Staying Current'],
     practical: 'Submit your complete capstone: portfolio + service + business + automation',
     duration: '~4 hours',
   },
@@ -78,7 +70,7 @@ export default function ModulesSection() {
         <div className="text-center mb-16">
           <p className="section-label mb-3">Course Curriculum</p>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            8 Modules, 40+ Lessons
+            8 Modules, Practical Outcomes
           </h2>
           <p className="text-dark-300 text-lg">
             From complete beginner to earning with AI — in 8 structured modules.
@@ -88,51 +80,32 @@ export default function ModulesSection() {
         <div className="space-y-3">
           {modules.map((mod) => {
             const Icon = mod.icon
-            const isOpen = expanded === mod.num
             return (
               <div
                 key={mod.num}
                 className={`border rounded-xl overflow-hidden transition-all duration-300 ${
-                  isOpen ? 'border-brand-500/40 bg-dark-800' : 'border-dark-600 bg-dark-800/50 hover:border-dark-500'
+                  'border-dark-600 bg-dark-800/50 hover:border-dark-500'
                 }`}
               >
-                <button
-                  className="w-full flex items-center gap-4 p-5 text-left"
-                  onClick={() => setExpanded(isOpen ? null : mod.num)}
-                >
+                <div className="w-full flex items-center gap-4 p-5 text-left">
                   <div className="w-10 h-10 rounded-lg bg-brand-500/10 flex items-center justify-center shrink-0">
                     <span className="text-brand-400 font-bold text-sm">{mod.num < 10 ? `0${mod.num}` : mod.num}</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold text-white">{mod.title}</div>
-                    <div className="text-sm text-dark-400 mt-0.5">{mod.lessons.length} lessons · {mod.duration}</div>
+                    <div className="text-sm text-dark-400 mt-0.5">{mod.duration} · practical project-based learning</div>
                   </div>
-                  {isOpen ? (
-                    <ChevronUp size={18} className="text-brand-400 shrink-0" />
-                  ) : (
-                    <ChevronDown size={18} className="text-dark-400 shrink-0" />
-                  )}
-                </button>
+                </div>
 
-                {isOpen && (
-                  <div className="px-5 pb-5">
-                    <p className="text-dark-300 text-sm mb-4 leading-relaxed">{mod.desc}</p>
-                    <div className="space-y-2 mb-4">
-                      {mod.lessons.map((lesson) => (
-                        <div key={lesson} className="flex items-center gap-3 text-sm">
-                          <BookOpen size={14} className="text-dark-400 shrink-0" />
-                          <span className="text-dark-300">{lesson}</span>
-                        </div>
-                      ))}
+                <div className="px-5 pb-5">
+                  <p className="text-dark-300 text-sm mb-4 leading-relaxed">{mod.desc}</p>
+                  <div className="bg-brand-500/5 border border-brand-500/20 rounded-lg p-4">
+                    <div className="text-xs text-brand-400 font-semibold uppercase tracking-wider mb-1">
+                      🎯 Practical Outcome
                     </div>
-                    <div className="bg-brand-500/5 border border-brand-500/20 rounded-lg p-4">
-                      <div className="text-xs text-brand-400 font-semibold uppercase tracking-wider mb-1">
-                        🎯 Practical Assignment
-                      </div>
-                      <div className="text-sm text-white">{mod.practical}</div>
-                    </div>
+                    <div className="text-sm text-white">{mod.practical}</div>
                   </div>
-                )}
+                </div>
               </div>
             )
           })}
