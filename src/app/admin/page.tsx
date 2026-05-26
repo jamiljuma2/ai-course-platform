@@ -73,14 +73,10 @@ export default function AdminDashboard() {
   const [progressLoading, setProgressLoading] = useState(false)
 
   useEffect(() => {
-    const savedAdminKey = window.localStorage.getItem('adminKey')
-    if (!savedAdminKey) {
-      setLoading(false)
-      return
-    }
-
-    setAdminKey(savedAdminKey)
-    fetchStats(savedAdminKey)
+    window.localStorage.removeItem('adminKey')
+    setAdminKey('')
+    setAuthed(false)
+    setLoading(false)
   }, [])
 
   const meetingEndTime = (() => {
