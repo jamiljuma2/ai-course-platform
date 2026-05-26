@@ -1,4 +1,4 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { createAdminServerClient } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing userId' }, { status: 400 })
   }
 
-  const supabase = await createServerClient()
+  const supabase = createAdminServerClient()
 
   if (batch) {
     if (!Array.isArray(lessonIds) || !Array.isArray(completedLessonIds)) {
