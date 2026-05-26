@@ -1,4 +1,4 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { createAdminServerClient } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
@@ -7,24 +7,28 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const supabase = await createServerClient()
+  const supabase = createAdminServerClient()
 
-  // Get all enrolled users with the course
-  const { data: enrollments, error: enrollError } = await supabase
-    .from('enrollments')
-    .select('id, user_id, users:user_id(id, name, email), course_id')
-    .eq('course_access', true)
+  const { data: course, error: courseError } = await supabase
+    .from('courses')
+    .select('id')
+    .eq('slug', 'ai-for-beginners')
+    .single()
 
-  if (enrollError) {
-    return NextResponse.json({ error: enrollError.message }, { status: 500 })
+  if (courseError || !course) {
+    return NextResponse.json({ error: courseError?.message || 'Course not found' }, { status: 500 })
   }
 
-  if (!enrollments || enrollments.length === 0) {
-    return NextResponse.json({ students: [], modules: [] })
-  }
+  const courseId = course.id
 
-  // Get the course_id from first enrollment
-  const courseId = enrollments[0].course_id
+  const { data: users, error: usersError } = await supabase
+    .from('users')
+    .select('id, name, email, role')
+    .order('name', { ascending: true })
+
+  if (usersError) {
+    return NextResponse.json({ error: usersError.message }, { status: 500 })
+  }
 
   // Get all modules for the course
   const { data: modules, error: modError } = await supabase
@@ -72,17 +76,13 @@ export async function GET(req: NextRequest) {
   }
 
   // Map to simple structure
-  const students = enrollments.map(e => ({
-    id: e.user_id,
-    name: (() => {
-      const user = Array.isArray(e.users) ? e.users[0] : e.users
-      return (user as { name?: string } | null | undefined)?.name || 'Unknown'
-    })(),
-    email: (() => {
-      const user = Array.isArray(e.users) ? e.users[0] : e.users
-      return (user as { email?: string } | null | undefined)?.email || ''
-    })(),
-  }))
+  const students = (users || [])
+    .filter(user => user.role !== 'admin')
+    .map(user => ({
+      id: user.id,
+      name: user.name || 'Unknown',
+      email: user.email || '',
+    }))
 
   return NextResponse.json({ students, modules })
 }

@@ -15,12 +15,12 @@ export async function GET(req: NextRequest) {
   const supabase = createAdminServerClient()
 
   const [
-    { count: totalUsers },
+    { data: users, error: usersError },
     { count: totalEnrollments },
     { data: payments },
     { data: recentPayments },
   ] = await Promise.all([
-    supabase.from('users').select('*', { count: 'exact', head: true }),
+    supabase.from('users').select('id, role'),
     supabase.from('enrollments').select('*', { count: 'exact', head: true }).eq('course_access', true),
     supabase.from('payments').select('amount').eq('status', 'completed'),
     supabase
@@ -30,10 +30,15 @@ export async function GET(req: NextRequest) {
       .limit(10),
   ])
 
+  if (usersError) {
+    return NextResponse.json({ error: usersError.message }, { status: 500 })
+  }
+
   const totalRevenue = payments?.reduce((sum, p) => sum + p.amount, 0) || 0
+  const totalUsers = (users || []).filter(user => user.role !== 'admin').length
 
   return NextResponse.json({
-    totalUsers: totalUsers || 0,
+    totalUsers,
     totalEnrollments: totalEnrollments || 0,
     totalRevenue,
     recentPayments: recentPayments || [],

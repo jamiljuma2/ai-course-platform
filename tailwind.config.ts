@@ -10,16 +10,16 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          50:  '#fef3e8',
-          100: '#fde0c0',
-          200: '#fbca94',
-          300: '#f9b15e',
-          400: '#f7982d',
-          500: '#e8820f',
-          600: '#c46a0a',
-          700: '#9d5209',
-          800: '#773d07',
-          900: '#522906',
+          50:  '#effdf3',
+          100: '#dcfbe3',
+          200: '#baf5cb',
+          300: '#89eaa7',
+          400: '#5bd87c',
+          500: '#2fb85c',
+          600: '#22924a',
+          700: '#1c733e',
+          800: '#165933',
+          900: '#114529',
         },
         dark: {
           900: '#0a0a0b',
@@ -63,6 +63,7 @@ const config: Config = {
       },
       backgroundImage: {
         'grid-pattern': "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+        'hero-soft-glow': "radial-gradient(circle at top, rgba(47, 184, 92, 0.18), transparent 48%), radial-gradient(circle at bottom right, rgba(91, 216, 124, 0.16), transparent 32%)",
       }
     },
   },

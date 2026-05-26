@@ -33,10 +33,13 @@ export default async function CertificatePage() {
 
   if (!enrollment) {
     return (
-      <div className="min-h-screen bg-dark-900 flex items-center justify-center px-4">
-        <div className="card max-w-md text-center">
-          <h1 className="text-2xl font-bold text-white mb-3">No active enrollment</h1>
-          <p className="text-dark-300 mb-6">You need an active enrollment before generating a certificate.</p>
+      <div className="min-h-screen bg-gradient-to-br from-white via-brand-50 to-brand-100/50 flex items-center justify-center px-4">
+        <div className="card max-w-md text-center soft-glow">
+          <div className="w-16 h-16 rounded-2xl bg-brand-500 text-white flex items-center justify-center mx-auto mb-5 shadow-lg shadow-brand-500/25">
+            🏆
+          </div>
+          <h1 className="text-2xl font-bold text-dark-900 mb-3">No active enrollment</h1>
+          <p className="text-dark-600 mb-6">You need an active enrollment before generating a certificate.</p>
           <Link href="/#enroll" className="btn-primary w-full">Enroll Now</Link>
         </div>
       </div>
@@ -74,26 +77,26 @@ export default async function CertificatePage() {
 
   if (certificateStatus === 'locked') {
     return (
-      <div className="min-h-screen bg-dark-900 px-4 py-8 flex items-center justify-center">
-        <div className="card max-w-lg text-center">
-          <div className="w-16 h-16 rounded-full bg-brand-500/10 border border-brand-500/20 flex items-center justify-center mx-auto mb-6">
-            <span className="text-brand-400 text-2xl">🏆</span>
+      <div className="min-h-screen bg-gradient-to-br from-white via-brand-50 to-brand-100/50 px-4 py-8 flex items-center justify-center">
+        <div className="card max-w-lg text-center soft-glow">
+          <div className="w-16 h-16 rounded-full bg-brand-50 border border-brand-100 flex items-center justify-center mx-auto mb-6">
+            <span className="text-brand-700 text-2xl">🏆</span>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-3">Certificate not ready yet</h1>
-          <p className="text-dark-300 mb-6">
+          <h1 className="text-3xl font-bold text-dark-900 mb-3">Certificate not ready yet</h1>
+          <p className="text-dark-600 mb-6">
             Finish at least 80% of the lessons and submit your capstone project to unlock your certificate.
           </p>
           <div className="space-y-3 text-left mb-6">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-dark-400">Progress</span>
-              <span className="text-white">{progressPct}%</span>
+              <span className="text-dark-600">Progress</span>
+              <span className="text-dark-900">{progressPct}%</span>
             </div>
-            <div className="h-2 bg-dark-700 rounded-full overflow-hidden">
-              <div className="h-full bg-brand-500 rounded-full" style={{ width: `${progressPct}%` }} />
+            <div className="h-2 bg-brand-100 rounded-full overflow-hidden">
+              <div className="h-full bg-brand-500 rounded-full shadow-[0_0_14px_rgba(47,184,92,0.35)]" style={{ width: `${progressPct}%` }} />
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-dark-400">Capstone</span>
-              <span className="text-white capitalize">{capstoneProject?.status || 'not started'}</span>
+              <span className="text-dark-600">Capstone</span>
+              <span className="text-dark-900 capitalize">{capstoneProject?.status || 'not started'}</span>
             </div>
           </div>
           <div className="grid sm:grid-cols-2 gap-3">

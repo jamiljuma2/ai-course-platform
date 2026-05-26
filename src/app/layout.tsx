@@ -36,13 +36,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${sora.variable} ${jetbrains.variable}`}>
-      <body className="bg-dark-900 text-white antialiased">
+      <body className="bg-white text-dark-900 antialiased">
         {children}
         <Toaster
           position="top-center"
           toastOptions={{
-            style: { background: '#18181b', color: '#fff', border: '1px solid #27272a' },
-            success: { iconTheme: { primary: '#e8820f', secondary: '#fff' } },
+            style: { background: '#ffffff', color: '#0f172a', border: '1px solid #dcfbe3' },
+            success: { iconTheme: { primary: '#2fb85c', secondary: '#ffffff' } },
           }}
         />
       </body>

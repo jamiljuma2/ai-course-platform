@@ -10,7 +10,7 @@ import NavBar from '@/components/landing/NavBar'
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-dark-900 overflow-x-hidden">
+    <main className="min-h-screen bg-white overflow-x-hidden text-dark-900">
       <NavBar />
       <HeroSection />
       <BenefitsSection />

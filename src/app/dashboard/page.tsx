@@ -43,14 +43,17 @@ export default async function DashboardPage() {
   // If not enrolled, show enrollment prompt
   if (!enrollment) {
     return (
-      <div className="min-h-screen bg-dark-900 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-white via-brand-50 to-brand-100/50 flex items-center justify-center px-4">
         <div className="w-full max-w-md text-center">
-          <h1 className="text-3xl font-bold text-white mb-4">Welcome, {profile?.name?.split(' ')[0]}!</h1>
-          <p className="text-dark-300 mb-8">You're logged in, but not yet enrolled in any courses.</p>
+          <div className="w-16 h-16 rounded-2xl bg-brand-500 text-white shadow-lg shadow-brand-500/25 flex items-center justify-center mx-auto mb-5 text-2xl font-bold">
+            AI
+          </div>
+          <h1 className="text-3xl font-bold text-dark-900 mb-4">Welcome, {profile?.name?.split(' ')[0]}!</h1>
+          <p className="text-dark-600 mb-8">You're logged in, but not yet enrolled in any courses.</p>
           
-          <div className="card p-8 mb-6">
-            <p className="text-dark-400 mb-6">
-              Enroll in <span className="text-brand-400 font-semibold">AI for Beginners</span> to get started:
+          <div className="card p-8 mb-6 soft-glow">
+            <p className="text-dark-600 mb-6">
+              Enroll in <span className="text-brand-700 font-semibold">AI for Beginners</span> to get started:
             </p>
             <Link href="/#enroll" className="btn-primary w-full inline-block mb-4">
               Enroll for KES 3,000
@@ -61,7 +64,7 @@ export default async function DashboardPage() {
           </div>
 
           <p className="text-xs text-dark-500">
-            Already completed payment? <a href="/" className="text-brand-400 hover:underline">Refresh the page</a>
+            Already completed payment? <a href="/" className="text-brand-700 hover:underline">Refresh the page</a>
           </p>
         </div>
       </div>

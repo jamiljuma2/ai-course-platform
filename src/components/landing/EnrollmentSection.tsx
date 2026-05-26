@@ -98,17 +98,17 @@ export default function EnrollmentSection() {
   }, [step, pollStatus])
 
   const inputClass = (field: string) =>
-    `w-full bg-dark-700 border rounded-xl px-4 py-3.5 text-white placeholder-dark-400 outline-none transition-all focus:ring-2 focus:ring-brand-500/50 ${
-      errors[field] ? 'border-red-500' : 'border-dark-600 hover:border-dark-500 focus:border-brand-500'
+    `w-full bg-white border rounded-xl px-4 py-3.5 text-dark-900 placeholder-dark-400 outline-none transition-all focus:ring-2 focus:ring-brand-500/20 ${
+      errors[field] ? 'border-red-500' : 'border-brand-100 hover:border-brand-300 focus:border-brand-500'
     }`
 
   return (
-    <section id="enroll" className="py-24 bg-dark-800/50">
+    <section id="enroll" className="py-24 bg-brand-50/60 border-y border-brand-50">
       <div className="max-w-xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-12">
           <p className="section-label mb-3">Get Started Today</p>
-          <h2 className="text-4xl font-bold text-white mb-4">Enroll in 60 Seconds</h2>
-          <p className="text-dark-300">Pay with M-Pesa — no card or account needed</p>
+          <h2 className="text-4xl font-bold text-dark-900 mb-4">Enroll in 60 Seconds</h2>
+          <p className="text-dark-600">Pay with M-Pesa — no card or account needed</p>
         </div>
 
         <div className="card">
@@ -116,7 +116,7 @@ export default function EnrollmentSection() {
           {step === 'form' && (
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-dark-300 mb-2">Full Name</label>
+                <label className="block text-sm font-medium text-dark-600 mb-2">Full Name</label>
                 <input
                   type="text"
                   placeholder="e.g. Amina Wanjiku"
@@ -128,7 +128,7 @@ export default function EnrollmentSection() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-dark-300 mb-2">Email Address</label>
+                <label className="block text-sm font-medium text-dark-600 mb-2">Email Address</label>
                 <input
                   type="email"
                   placeholder="you@gmail.com"
@@ -140,9 +140,9 @@ export default function EnrollmentSection() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-dark-300 mb-2">M-Pesa Phone Number</label>
+                <label className="block text-sm font-medium text-dark-600 mb-2">M-Pesa Phone Number</label>
                 <div className="relative">
-                  <Smartphone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-dark-400" />
+                  <Smartphone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-dark-500" />
                   <input
                     type="tel"
                     placeholder="0712 345 678"
@@ -156,12 +156,12 @@ export default function EnrollmentSection() {
               </div>
 
               {/* Summary */}
-              <div className="bg-dark-700 rounded-xl p-4 flex items-center justify-between">
+              <div className="bg-brand-50 rounded-xl p-4 flex items-center justify-between border border-brand-100">
                 <div>
-                  <div className="text-sm text-white font-medium">AI for Beginners Course</div>
-                  <div className="text-xs text-dark-400">Lifetime access · 8 modules</div>
+                  <div className="text-sm text-dark-900 font-medium">AI for Beginners Course</div>
+                  <div className="text-xs text-dark-500">Lifetime access · 8 modules</div>
                 </div>
-                <div className="text-xl font-bold text-brand-400">KES 3,000</div>
+                <div className="text-xl font-bold text-brand-700">KES 3,000</div>
               </div>
 
               <button
@@ -185,17 +185,17 @@ export default function EnrollmentSection() {
           {/* --- PENDING STEP --- */}
           {step === 'pending' && (
             <div className="text-center py-8">
-              <div className="w-20 h-20 rounded-full bg-brand-500/10 border-2 border-brand-500/30 flex items-center justify-center mx-auto mb-6 animate-pulse-slow">
-                <Smartphone size={32} className="text-brand-400" />
+              <div className="w-20 h-20 rounded-full bg-brand-50 border-2 border-brand-200 flex items-center justify-center mx-auto mb-6 animate-pulse-slow">
+                <Smartphone size={32} className="text-brand-600" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Check Your Phone</h3>
-              <p className="text-dark-300 mb-6">
+              <h3 className="text-xl font-bold text-dark-900 mb-2">Check Your Phone</h3>
+              <p className="text-dark-600 mb-6">
                 An M-Pesa prompt has been sent to{' '}
-                <span className="text-white font-medium">{form.phone}</span>.
+                <span className="text-dark-900 font-medium">{form.phone}</span>.
                 Enter your M-Pesa PIN to complete payment.
               </p>
-              <div className="bg-dark-700 rounded-xl p-4 mb-6">
-                <div className="text-sm text-dark-300 mb-1">Waiting for payment confirmation...</div>
+              <div className="bg-white rounded-xl p-4 mb-6 border border-brand-100">
+                <div className="text-sm text-dark-600 mb-1">Waiting for payment confirmation...</div>
                 <div className="flex items-center justify-center gap-2 text-brand-400">
                   <Loader2 size={16} className="animate-spin" />
                   <span className="text-sm font-medium">
@@ -205,7 +205,7 @@ export default function EnrollmentSection() {
               </div>
               <button
                 onClick={() => setStep('form')}
-                className="text-dark-400 hover:text-white text-sm transition-colors"
+                className="text-dark-500 hover:text-brand-700 text-sm transition-colors"
               >
                 ← Cancel and go back
               </button>
@@ -215,18 +215,18 @@ export default function EnrollmentSection() {
           {/* --- SUCCESS STEP --- */}
           {step === 'success' && (
             <div className="text-center py-8">
-              <div className="w-20 h-20 rounded-full bg-green-500/10 border-2 border-green-500/30 flex items-center justify-center mx-auto mb-6">
-                <CheckCircle2 size={36} className="text-green-400" />
+              <div className="w-20 h-20 rounded-full bg-brand-50 border-2 border-brand-200 flex items-center justify-center mx-auto mb-6">
+                <CheckCircle2 size={36} className="text-brand-600" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-2">Payment Confirmed! 🎉</h3>
+              <h3 className="text-2xl font-bold text-dark-900 mb-2">Payment Confirmed! 🎉</h3>
               {receiptNo && (
-                <div className="text-dark-400 text-sm mb-4">
-                  Receipt: <span className="font-mono text-white">{receiptNo}</span>
+                <div className="text-dark-500 text-sm mb-4">
+                  Receipt: <span className="font-mono text-dark-900">{receiptNo}</span>
                 </div>
               )}
-              <p className="text-dark-300 mb-6">
-                Welcome to <strong className="text-white">AI for Beginners!</strong> Check your email at{' '}
-                <span className="text-brand-400">{form.email}</span> for your access details.
+              <p className="text-dark-600 mb-6">
+                Welcome to <strong className="text-dark-900">AI for Beginners!</strong> Check your email at{' '}
+                <span className="text-brand-700">{form.email}</span> for your access details.
               </p>
               <a href="/dashboard" className="btn-primary w-full">
                 Go to Your Dashboard →
@@ -240,8 +240,8 @@ export default function EnrollmentSection() {
               <div className="w-20 h-20 rounded-full bg-red-500/10 border-2 border-red-500/30 flex items-center justify-center mx-auto mb-6">
                 <XCircle size={36} className="text-red-400" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Payment Not Completed</h3>
-              <p className="text-dark-300 mb-6">
+              <h3 className="text-xl font-bold text-dark-900 mb-2">Payment Not Completed</h3>
+              <p className="text-dark-600 mb-6">
                 The payment was cancelled or timed out. Please try again. Make sure you have sufficient M-Pesa balance.
               </p>
               <button

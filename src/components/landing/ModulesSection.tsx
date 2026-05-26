@@ -65,14 +65,14 @@ export default function ModulesSection() {
   const [expanded, setExpanded] = useState<number | null>(null)
 
   return (
-    <section id="modules" className="py-24 bg-dark-900">
+    <section id="modules" className="py-24 bg-brand-50/50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-16">
           <p className="section-label mb-3">Course Curriculum</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-dark-900 mb-4">
             8 Modules, Practical Outcomes
           </h2>
-          <p className="text-dark-300 text-lg">
+          <p className="text-dark-600 text-lg">
             From complete beginner to earning with AI — in 8 structured modules.
           </p>
         </div>
@@ -84,26 +84,26 @@ export default function ModulesSection() {
               <div
                 key={mod.num}
                 className={`border rounded-xl overflow-hidden transition-all duration-300 ${
-                  'border-dark-600 bg-dark-800/50 hover:border-dark-500'
+                  'border-brand-100 bg-white hover:border-brand-300 shadow-sm hover:shadow-md'
                 }`}
               >
                 <div className="w-full flex items-center gap-4 p-5 text-left">
-                  <div className="w-10 h-10 rounded-lg bg-brand-500/10 flex items-center justify-center shrink-0">
-                    <span className="text-brand-400 font-bold text-sm">{mod.num < 10 ? `0${mod.num}` : mod.num}</span>
+                  <div className="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center shrink-0 border border-brand-100">
+                    <span className="text-brand-700 font-bold text-sm">{mod.num < 10 ? `0${mod.num}` : mod.num}</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-white">{mod.title}</div>
-                    <div className="text-sm text-dark-400 mt-0.5">{mod.duration} · practical project-based learning</div>
+                    <div className="font-semibold text-dark-900">{mod.title}</div>
+                    <div className="text-sm text-dark-500 mt-0.5">{mod.duration} · practical project-based learning</div>
                   </div>
                 </div>
 
                 <div className="px-5 pb-5">
-                  <p className="text-dark-300 text-sm mb-4 leading-relaxed">{mod.desc}</p>
-                  <div className="bg-brand-500/5 border border-brand-500/20 rounded-lg p-4">
-                    <div className="text-xs text-brand-400 font-semibold uppercase tracking-wider mb-1">
+                  <p className="text-dark-600 text-sm mb-4 leading-relaxed">{mod.desc}</p>
+                  <div className="bg-brand-50 border border-brand-100 rounded-lg p-4">
+                    <div className="text-xs text-brand-700 font-semibold uppercase tracking-wider mb-1">
                       🎯 Practical Outcome
                     </div>
-                    <div className="text-sm text-white">{mod.practical}</div>
+                    <div className="text-sm text-dark-900">{mod.practical}</div>
                   </div>
                 </div>
               </div>
@@ -112,14 +112,14 @@ export default function ModulesSection() {
         </div>
 
         {/* Capstone */}
-        <div className="mt-8 card border-brand-500/30 bg-gradient-to-br from-brand-500/5 to-dark-800">
+        <div className="mt-8 card border-brand-100 bg-gradient-to-br from-brand-50 to-white">
           <div className="text-center">
             <div className="text-3xl mb-3">🏆</div>
-            <h3 className="text-xl font-bold text-white mb-2">Final Capstone Project</h3>
-            <p className="text-dark-300 text-sm mb-4">Submit your complete portfolio to earn your certificate:</p>
+            <h3 className="text-xl font-bold text-dark-900 mb-2">Final Capstone Project</h3>
+            <p className="text-dark-600 text-sm mb-4">Submit your complete portfolio to earn your certificate:</p>
             <div className="flex flex-wrap justify-center gap-3">
               {['Portfolio', 'Freelance Service', 'Business Idea', 'Content Samples', 'Automation Workflow'].map(item => (
-                <span key={item} className="px-3 py-1 bg-brand-500/10 border border-brand-500/20 rounded-full text-brand-400 text-xs font-medium">
+                <span key={item} className="px-3 py-1 bg-white border border-brand-100 rounded-full text-brand-700 text-xs font-medium shadow-sm">
                   {item}
                 </span>
               ))}

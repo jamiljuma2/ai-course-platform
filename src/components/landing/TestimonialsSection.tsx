@@ -47,39 +47,39 @@ const testimonials = [
 
 export default function TestimonialsSection() {
   return (
-    <section className="py-24 bg-dark-800/30">
+    <section className="py-24 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-16">
           <p className="section-label mb-3">Student Success Stories</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-dark-900 mb-4">
             Real Results from Real Students
           </h2>
-          <p className="text-dark-300 text-lg">
+          <p className="text-dark-600 text-lg">
             Join hundreds of Kenyans who are already earning with AI.
           </p>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {testimonials.map(({ name, role, avatar, rating, text }) => (
-            <div key={name} className="card flex flex-col gap-4">
+            <div key={name} className="card flex flex-col gap-4 hover:border-brand-200 transition-colors">
               {/* Stars */}
               <div className="flex gap-1">
                 {Array.from({ length: rating }).map((_, i) => (
-                  <Star key={i} size={14} className="text-brand-400 fill-brand-400" />
+                  <Star key={i} size={14} className="text-brand-500 fill-brand-500" />
                 ))}
               </div>
 
               {/* Text */}
-              <p className="text-dark-300 text-sm leading-relaxed flex-1">"{text}"</p>
+              <p className="text-dark-600 text-sm leading-relaxed flex-1">"{text}"</p>
 
               {/* Author */}
-              <div className="flex items-center gap-3 pt-2 border-t border-dark-600">
-                <div className="w-9 h-9 rounded-full bg-brand-500/20 flex items-center justify-center text-brand-400 text-xs font-bold">
+              <div className="flex items-center gap-3 pt-2 border-t border-brand-100">
+                <div className="w-9 h-9 rounded-full bg-brand-50 flex items-center justify-center text-brand-700 text-xs font-bold border border-brand-100">
                   {avatar}
                 </div>
                 <div>
-                  <div className="text-white text-sm font-semibold">{name}</div>
-                  <div className="text-dark-400 text-xs">{role}</div>
+                  <div className="text-dark-900 text-sm font-semibold">{name}</div>
+                  <div className="text-dark-500 text-xs">{role}</div>
                 </div>
               </div>
             </div>

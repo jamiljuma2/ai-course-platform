@@ -287,11 +287,11 @@ export default function AdminDashboard() {
 
   const statusBadge = (status: string) => {
     const map: Record<string, { icon: React.ReactNode; cls: string }> = {
-      completed: { icon: <CheckCircle size={12} />, cls: 'text-green-400 bg-green-400/10' },
-      pending: { icon: <Clock size={12} />, cls: 'text-yellow-400 bg-yellow-400/10' },
-      failed: { icon: <XCircle size={12} />, cls: 'text-red-400 bg-red-400/10' },
+      completed: { icon: <CheckCircle size={12} />, cls: 'text-brand-700 bg-brand-50 border border-brand-100' },
+      pending: { icon: <Clock size={12} />, cls: 'text-amber-700 bg-amber-50 border border-amber-100' },
+      failed: { icon: <XCircle size={12} />, cls: 'text-red-700 bg-red-50 border border-red-100' },
     }
-    const { icon, cls } = map[status] || { icon: null, cls: 'text-dark-400 bg-dark-700' }
+    const { icon, cls } = map[status] || { icon: null, cls: 'text-dark-600 bg-white border border-brand-100' }
     return (
       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${cls}`}>
         {icon}{status}
@@ -301,16 +301,16 @@ export default function AdminDashboard() {
 
   if (!authed) {
     return (
-      <div className="min-h-screen bg-dark-900 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-white via-brand-50 to-brand-100/50 flex items-center justify-center px-4">
         <div className="card max-w-sm w-full">
-          <h2 className="text-xl font-bold text-white mb-6">Admin Access</h2>
+          <h2 className="text-xl font-bold text-dark-900 mb-6">Admin Access</h2>
           <input
             type="password"
             placeholder="Enter admin key"
             value={adminKey}
             onChange={e => setAdminKey(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && fetchStats()}
-            className="w-full bg-dark-700 border border-dark-600 rounded-xl px-4 py-3 text-white mb-4 outline-none focus:border-brand-500"
+            className="w-full bg-white border border-brand-100 rounded-xl px-4 py-3 text-dark-900 mb-4 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
           />
           <button onClick={fetchStats} className="btn-primary w-full">
             Access Dashboard
@@ -321,13 +321,13 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-dark-900 p-3 sm:p-6 lg:p-8 overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-white via-brand-50/60 to-white p-3 sm:p-6 lg:p-8 overflow-x-hidden text-dark-900">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white">Admin Dashboard</h1>
-            <p className="text-dark-400 text-xs sm:text-sm mt-1">AI for Beginners Course</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-dark-900">Admin Dashboard</h1>
+            <p className="text-dark-600 text-xs sm:text-sm mt-1">AI for Beginners Course</p>
           </div>
           <div className="flex gap-3">
             <button onClick={fetchStats} className="btn-secondary text-sm">
@@ -344,15 +344,15 @@ export default function AdminDashboard() {
           <>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
               {[
-                { label: 'Total Students', value: stats.totalUsers, icon: Users, color: 'text-blue-400' },
-                { label: 'Active Enrollments', value: stats.totalEnrollments, icon: BookOpen, color: 'text-green-400' },
-                { label: 'Revenue (KES)', value: `${stats.totalRevenue.toLocaleString()}`, icon: DollarSign, color: 'text-brand-400' },
-                { label: 'Avg. Order', value: stats.totalEnrollments > 0 ? `${Math.round(stats.totalRevenue / stats.totalEnrollments).toLocaleString()}` : '0', icon: TrendingUp, color: 'text-purple-400' },
+                { label: 'Total Students', value: stats.totalUsers, icon: Users, color: 'text-brand-700' },
+                { label: 'Active Enrollments', value: stats.totalEnrollments, icon: BookOpen, color: 'text-brand-600' },
+                { label: 'Revenue (KES)', value: `${stats.totalRevenue.toLocaleString()}`, icon: DollarSign, color: 'text-brand-700' },
+                { label: 'Avg. Order', value: stats.totalEnrollments > 0 ? `${Math.round(stats.totalRevenue / stats.totalEnrollments).toLocaleString()}` : '0', icon: TrendingUp, color: 'text-brand-600' },
               ].map(({ label, value, icon: Icon, color }) => (
-                <div key={label} className="card">
+                <div key={label} className="card soft-glow">
                   <Icon size={20} className={`${color} mb-3`} />
-                  <div className="text-2xl font-bold text-white">{value}</div>
-                  <div className="text-xs text-dark-400 mt-1">{label}</div>
+                  <div className="text-2xl font-bold text-dark-900">{value}</div>
+                  <div className="text-xs text-dark-600 mt-1">{label}</div>
                 </div>
               ))}
             </div>
@@ -360,9 +360,9 @@ export default function AdminDashboard() {
             {/* Meetings + Certificates + Mark Progress */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-8">
               <div className="card">
-                <h3 className="text-lg font-bold text-white mb-3">Mark Module Complete</h3>
+                <h3 className="text-lg font-bold text-dark-900 mb-3">Mark Module Complete</h3>
                 <div className="mb-3">
-                  <label className="block text-xs text-dark-400 mb-1">Select Student</label>
+                  <label className="block text-xs text-dark-600 mb-1">Select Student</label>
                   <select 
                     value={selectedStudent} 
                     onChange={e => {
@@ -370,7 +370,7 @@ export default function AdminDashboard() {
                       setSelectedModule('')
                       setCompletedLessonIds([])
                     }}
-                    className="w-full bg-dark-800 border border-dark-600 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-brand-500"
+                    className="w-full bg-white border border-brand-100 rounded-lg px-3 py-2 text-dark-900 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
                   >
                     <option value="">Choose a student...</option>
                     {students.map(s => (
@@ -379,12 +379,12 @@ export default function AdminDashboard() {
                   </select>
                 </div>
                 <div className="mb-3">
-                  <label className="block text-xs text-dark-400 mb-1">Select Module</label>
+                  <label className="block text-xs text-dark-600 mb-1">Select Module</label>
                   <select 
                     value={selectedModule} 
                     onChange={e => setSelectedModule(e.target.value)}
                     disabled={!selectedStudent}
-                    className="w-full bg-dark-800 border border-dark-600 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-brand-500 disabled:opacity-50"
+                    className="w-full bg-white border border-brand-100 rounded-lg px-3 py-2 text-dark-900 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 disabled:opacity-50"
                   >
                     <option value="">Choose a module...</option>
                     {modules.map(m => (
@@ -393,7 +393,7 @@ export default function AdminDashboard() {
                   </select>
                 </div>
                 {selectedModule && (
-                  <div className="mb-3 p-2 bg-dark-800 rounded text-xs text-dark-300">
+                  <div className="mb-3 p-2 bg-brand-50 border border-brand-100 rounded text-xs text-dark-600">
                     {modules.find(m => m.id === selectedModule)?.lessons.length || 0} lessons will be marked complete
                   </div>
                 )}
@@ -407,19 +407,19 @@ export default function AdminDashboard() {
               </div>
 
               <div className="card">
-                <h3 className="text-lg font-bold text-white mb-3">Schedule Live Session</h3>
-                <input className="w-full mb-2 bg-dark-800 p-2 rounded" placeholder="Title" value={meetingTitle} onChange={e=>setMeetingTitle(e.target.value)} />
-                <label className="block text-xs text-dark-400 mb-1">Start Time</label>
-                <input type="datetime-local" className="w-full mb-2 bg-dark-800 p-2 rounded" value={meetingStartTime} onChange={e=>setMeetingStartTime(e.target.value)} />
-                <label className="block text-xs text-dark-400 mb-1">Duration (minutes)</label>
-                <input type="number" min="1" className="w-full mb-2 bg-dark-800 p-2 rounded" value={meetingDuration} onChange={e=>setMeetingDuration(e.target.value)} />
-                <div className="w-full mb-2 bg-dark-800 p-2 rounded text-dark-300 text-sm">
+                <h3 className="text-lg font-bold text-dark-900 mb-3">Schedule Live Session</h3>
+                <input className="w-full mb-2 bg-white border border-brand-100 p-2 rounded-lg text-dark-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" placeholder="Title" value={meetingTitle} onChange={e=>setMeetingTitle(e.target.value)} />
+                <label className="block text-xs text-dark-600 mb-1">Start Time</label>
+                <input type="datetime-local" className="w-full mb-2 bg-white border border-brand-100 p-2 rounded-lg text-dark-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" value={meetingStartTime} onChange={e=>setMeetingStartTime(e.target.value)} />
+                <label className="block text-xs text-dark-600 mb-1">Duration (minutes)</label>
+                <input type="number" min="1" className="w-full mb-2 bg-white border border-brand-100 p-2 rounded-lg text-dark-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" value={meetingDuration} onChange={e=>setMeetingDuration(e.target.value)} />
+                <div className="w-full mb-2 bg-brand-50 border border-brand-100 p-2 rounded-lg text-dark-600 text-sm">
                   End Time: {meetingEndTime || 'Auto-calculated after duration is set'}
                 </div>
-                <input className="w-full mb-2 bg-dark-800 p-2 rounded" placeholder="Meet link" value={meetingLink} onChange={e=>setMeetingLink(e.target.value)} />
+                <input className="w-full mb-2 bg-white border border-brand-100 p-2 rounded-lg text-dark-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" placeholder="Meet link" value={meetingLink} onChange={e=>setMeetingLink(e.target.value)} />
                 <div className="flex items-center gap-2 mb-3">
                   <input id="notify" type="checkbox" checked={notifyUsers} onChange={e=>setNotifyUsers(e.target.checked)} />
-                  <label htmlFor="notify" className="text-sm text-dark-400">Notify enrolled users</label>
+                  <label htmlFor="notify" className="text-sm text-dark-600">Notify enrolled users</label>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={scheduleMeeting} className="btn-primary">Schedule & Notify</button>
@@ -427,8 +427,8 @@ export default function AdminDashboard() {
               </div>
 
               <div className="card">
-                <h3 className="text-lg font-bold text-white mb-3">Release Certificate</h3>
-                <input className="w-full mb-2 bg-dark-800 p-2 rounded" placeholder="Student email" value={certEmail} onChange={e=>setCertEmail(e.target.value)} />
+                <h3 className="text-lg font-bold text-dark-900 mb-3">Release Certificate</h3>
+                <input className="w-full mb-2 bg-white border border-brand-100 p-2 rounded-lg text-dark-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" placeholder="Student email" value={certEmail} onChange={e=>setCertEmail(e.target.value)} />
                 <div className="flex gap-2">
                   <button onClick={releaseCertificate} className="btn-primary">Release Certificate</button>
                 </div>
@@ -437,31 +437,31 @@ export default function AdminDashboard() {
 
             {/* Recent Payments */}
             <div className="card">
-              <h2 className="text-lg font-bold text-white mb-4">Recent Payments</h2>
+              <h2 className="text-lg font-bold text-dark-900 mb-4">Recent Payments</h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-dark-700">
-                      <th className="text-left py-3 text-dark-400 font-medium">Student</th>
-                      <th className="text-left py-3 text-dark-400 font-medium">Phone</th>
-                      <th className="text-left py-3 text-dark-400 font-medium">Amount</th>
-                      <th className="text-left py-3 text-dark-400 font-medium">Status</th>
-                      <th className="text-left py-3 text-dark-400 font-medium">Receipt</th>
-                      <th className="text-left py-3 text-dark-400 font-medium">Date</th>
+                    <tr className="border-b border-brand-100">
+                      <th className="text-left py-3 text-dark-600 font-medium">Student</th>
+                      <th className="text-left py-3 text-dark-600 font-medium">Phone</th>
+                      <th className="text-left py-3 text-dark-600 font-medium">Amount</th>
+                      <th className="text-left py-3 text-dark-600 font-medium">Status</th>
+                      <th className="text-left py-3 text-dark-600 font-medium">Receipt</th>
+                      <th className="text-left py-3 text-dark-600 font-medium">Date</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-dark-700">
+                  <tbody className="divide-y divide-brand-100">
                     {stats.recentPayments.map(payment => (
-                      <tr key={payment.id} className="hover:bg-dark-700/30 transition-colors">
+                      <tr key={payment.id} className="hover:bg-brand-50/80 transition-colors">
                         <td className="py-3">
-                          <div className="text-white font-medium">{payment.users?.name || '—'}</div>
+                          <div className="text-dark-900 font-medium">{payment.users?.name || '—'}</div>
                           <div className="text-dark-500 text-xs">{payment.users?.email || '—'}</div>
                         </td>
-                        <td className="py-3 text-dark-300 font-mono text-xs">{payment.phone}</td>
-                        <td className="py-3 text-white font-medium">KES {payment.amount.toLocaleString()}</td>
+                        <td className="py-3 text-dark-700 font-mono text-xs">{payment.phone}</td>
+                        <td className="py-3 text-dark-900 font-medium">KES {payment.amount.toLocaleString()}</td>
                         <td className="py-3">{statusBadge(payment.status)}</td>
-                        <td className="py-3 text-dark-300 font-mono text-xs">{payment.mpesa_receipt || '—'}</td>
-                        <td className="py-3 text-dark-400 text-xs">
+                        <td className="py-3 text-dark-700 font-mono text-xs">{payment.mpesa_receipt || '—'}</td>
+                        <td className="py-3 text-dark-600 text-xs">
                           {new Date(payment.created_at).toLocaleDateString('en-KE', {
                             day: 'numeric', month: 'short', year: 'numeric'
                           })}
@@ -472,7 +472,7 @@ export default function AdminDashboard() {
                 </table>
 
                 {stats.recentPayments.length === 0 && (
-                  <div className="text-center py-12 text-dark-400">No payments yet</div>
+                  <div className="text-center py-12 text-dark-600">No payments yet</div>
                 )}
               </div>
             </div>

@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --brand: #e8820f;
-  --brand-light: #f7982d;
+  --brand: #2fb85c;
+  --brand-light: #5bd87c;
 }
 
 @layer base {
@@ -15,6 +15,10 @@
   body {
     font-family: var(--font-sora), system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
+    background:
+      radial-gradient(circle at top, rgba(47, 184, 92, 0.08), transparent 35%),
+      linear-gradient(180deg, #ffffff 0%, #f8fff9 100%);
+    color: #0f172a;
   }
 
   h1, h2, h3, h4, h5 {
@@ -30,33 +34,33 @@
     @apply inline-flex items-center justify-center gap-2 px-8 py-4 
            bg-brand-500 hover:bg-brand-400 text-white font-semibold 
            rounded-xl transition-all duration-200 hover:scale-[1.02] 
-           active:scale-[0.98] shadow-lg shadow-brand-900/50;
+           active:scale-[0.98] shadow-lg shadow-brand-500/25;
   }
 
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2 px-8 py-4 
-           bg-dark-700 hover:bg-dark-600 text-white font-semibold 
-           rounded-xl border border-dark-500 transition-all duration-200;
+           bg-white hover:bg-brand-50 text-dark-900 font-semibold 
+           rounded-xl border border-brand-100 transition-all duration-200;
   }
 
   .card {
-    @apply bg-dark-800 border border-dark-600 rounded-2xl p-6;
+    @apply bg-white border border-brand-100 rounded-2xl p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)];
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-brand-400 to-brand-200 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-brand-700 via-brand-500 to-brand-300 bg-clip-text text-transparent;
   }
 
   .section-label {
-    @apply text-brand-400 text-sm font-semibold tracking-widest uppercase;
+    @apply text-brand-600 text-sm font-semibold tracking-widest uppercase;
   }
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0a0a0b; }
-::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #52525b; }
+::-webkit-scrollbar-track { background: #f1f8f3; }
+::-webkit-scrollbar-thumb { background: #9ad6ae; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #5bbf7b; }
 
 /* Progress bar animation */
 @keyframes progress-fill {
@@ -68,5 +72,14 @@
 
 /* Glow effect for CTA */
 .glow-brand {
-  box-shadow: 0 0 40px rgba(232, 130, 15, 0.3), 0 0 80px rgba(232, 130, 15, 0.1);
+  box-shadow:
+    0 0 0 1px rgba(91, 216, 124, 0.35),
+    0 0 28px rgba(47, 184, 92, 0.35),
+    0 0 90px rgba(47, 184, 92, 0.18);
+}
+
+.soft-glow {
+  box-shadow:
+    0 14px 40px rgba(47, 184, 92, 0.12),
+    0 0 0 1px rgba(47, 184, 92, 0.12);
 }

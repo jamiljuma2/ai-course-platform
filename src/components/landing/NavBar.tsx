@@ -55,40 +55,40 @@ export default function NavBar() {
 
   return (
     <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-      scrolled ? 'bg-dark-900/95 backdrop-blur border-b border-dark-700' : 'bg-transparent'
+      scrolled ? 'bg-white/90 backdrop-blur-xl border-b border-brand-100 shadow-sm' : 'bg-transparent'
     }`}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-sm font-bold">
+          <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-sm font-bold text-white shadow-md shadow-brand-500/25">
             AI
           </div>
-          <span className="font-bold text-white">AI for Beginners</span>
+          <span className="font-bold text-dark-900">AI for Beginners</span>
         </Link>
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">
-          <a href="#modules" className="text-sm text-dark-300 hover:text-white transition-colors">Modules</a>
-          <a href="#pricing" className="text-sm text-dark-300 hover:text-white transition-colors">Pricing</a>
+          <a href="#modules" className="text-sm text-dark-600 hover:text-brand-600 transition-colors">Modules</a>
+          <a href="#pricing" className="text-sm text-dark-600 hover:text-brand-600 transition-colors">Pricing</a>
           {!loading && user && (
-            <Link href="/dashboard" className="text-sm text-dark-300 hover:text-white transition-colors">Dashboard</Link>
+            <Link href="/dashboard" className="text-sm text-dark-600 hover:text-brand-600 transition-colors">Dashboard</Link>
           )}
           
           {!loading && (
             <>
               {user ? (
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2 px-3 py-2 bg-dark-800 rounded-lg">
-                    <div className="w-6 h-6 rounded-full bg-brand-500 flex items-center justify-center text-xs font-bold text-white">
+                  <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg border border-brand-100 shadow-sm">
+                    <div className="w-6 h-6 rounded-full bg-brand-500 flex items-center justify-center text-xs font-bold text-white shadow-sm shadow-brand-500/20">
                       {(user.user_metadata?.name || user.email || 'U').charAt(0).toUpperCase()}
                     </div>
-                    <span className="text-xs text-dark-300 truncate max-w-[100px]">
+                    <span className="text-xs text-dark-600 truncate max-w-[100px]">
                       {user.user_metadata?.name || user.email}
                     </span>
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="text-sm text-dark-300 hover:text-red-400 transition-colors flex items-center gap-1"
+                    className="text-sm text-dark-600 hover:text-red-500 transition-colors flex items-center gap-1"
                   >
                     <LogOut size={16} />
                     Sign Out
@@ -96,7 +96,7 @@ export default function NavBar() {
                 </div>
               ) : (
                 <>
-                  <Link href="/login" className="text-sm text-dark-300 hover:text-white transition-colors">Sign In</Link>
+                  <Link href="/login" className="text-sm text-dark-600 hover:text-brand-600 transition-colors">Sign In</Link>
                   <a href="#enroll" className="btn-primary py-2 px-5 text-sm">Enroll Now</a>
                 </>
               )}
@@ -106,7 +106,7 @@ export default function NavBar() {
 
         {/* Mobile menu */}
         <button
-          className="md:hidden text-white"
+          className="md:hidden text-dark-900"
           onClick={() => setOpen(!open)}
         >
           {open ? <X size={24} /> : <Menu size={24} />}
@@ -115,22 +115,22 @@ export default function NavBar() {
 
       {/* Mobile dropdown */}
       {open && (
-        <div className="md:hidden bg-dark-800 border-t border-dark-700 px-4 py-4 space-y-4">
-          <a href="#modules" onClick={() => setOpen(false)} className="block text-dark-300 hover:text-white">Modules</a>
-          <a href="#pricing" onClick={() => setOpen(false)} className="block text-dark-300 hover:text-white">Pricing</a>
+        <div className="md:hidden bg-white border-t border-brand-100 px-4 py-4 space-y-4 shadow-lg">
+          <a href="#modules" onClick={() => setOpen(false)} className="block text-dark-600 hover:text-brand-600">Modules</a>
+          <a href="#pricing" onClick={() => setOpen(false)} className="block text-dark-600 hover:text-brand-600">Pricing</a>
           {!loading && user && (
-            <Link href="/dashboard" onClick={() => setOpen(false)} className="block text-dark-300 hover:text-white">Dashboard</Link>
+            <Link href="/dashboard" onClick={() => setOpen(false)} className="block text-dark-600 hover:text-brand-600">Dashboard</Link>
           )}
           
           {!loading && (
             <>
               {user ? (
                 <>
-                  <div className="flex items-center gap-2 px-3 py-2 bg-dark-700 rounded-lg">
-                    <div className="w-6 h-6 rounded-full bg-brand-500 flex items-center justify-center text-xs font-bold text-white">
+                  <div className="flex items-center gap-2 px-3 py-2 bg-brand-50 rounded-lg border border-brand-100">
+                    <div className="w-6 h-6 rounded-full bg-brand-500 flex items-center justify-center text-xs font-bold text-white shadow-sm shadow-brand-500/20">
                       {(user.user_metadata?.name || user.email || 'U').charAt(0).toUpperCase()}
                     </div>
-                    <span className="text-xs text-dark-300">
+                    <span className="text-xs text-dark-600">
                       {user.user_metadata?.name || user.email}
                     </span>
                   </div>
@@ -139,7 +139,7 @@ export default function NavBar() {
                       handleLogout()
                       setOpen(false)
                     }}
-                    className="w-full text-left text-dark-300 hover:text-red-400 transition-colors flex items-center gap-2 px-3 py-2"
+                    className="w-full text-left text-dark-600 hover:text-red-500 transition-colors flex items-center gap-2 px-3 py-2"
                   >
                     <LogOut size={16} />
                     Sign Out
@@ -147,7 +147,7 @@ export default function NavBar() {
                 </>
               ) : (
                 <>
-                  <Link href="/login" onClick={() => setOpen(false)} className="block text-dark-300 hover:text-white">Sign In</Link>
+                  <Link href="/login" onClick={() => setOpen(false)} className="block text-dark-600 hover:text-brand-600">Sign In</Link>
                   <a href="#enroll" onClick={() => setOpen(false)} className="btn-primary w-full text-center">Enroll Now</a>
                 </>
               )}
