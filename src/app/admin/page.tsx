@@ -40,6 +40,17 @@ interface Module {
   lessons: Lesson[]
 }
 
+interface ReviewItem {
+  id: string
+  name: string
+  role?: string | null
+  rating: number
+  comment: string
+  avatar_initials: string
+  status: 'published' | 'pending' | 'hidden'
+  created_at: string
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
@@ -53,6 +64,8 @@ export default function AdminDashboard() {
   const [certEmail, setCertEmail] = useState('')
   const [students, setStudents] = useState<Student[]>([])
   const [modules, setModules] = useState<Module[]>([])
+  const [reviews, setReviews] = useState<ReviewItem[]>([])
+  const [reviewsLoading, setReviewsLoading] = useState(false)
   const [selectedStudent, setSelectedStudent] = useState('')
   const [selectedModule, setSelectedModule] = useState('')
   const [completedLessonIds, setCompletedLessonIds] = useState<string[]>([])
@@ -80,6 +93,7 @@ export default function AdminDashboard() {
         setAuthed(true)
         // Also fetch students and modules
         fetchStudentsModules()
+        fetchReviews()
       } else {
         alert('Invalid admin key')
       }
@@ -100,6 +114,23 @@ export default function AdminDashboard() {
       }
     } catch (e) {
       console.error('Error fetching students/modules:', e)
+    }
+  }
+
+  const fetchReviews = async () => {
+    setReviewsLoading(true)
+    try {
+      const res = await fetch('/api/admin/reviews', {
+        headers: { 'x-admin-key': adminKey }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setReviews(Array.isArray(data.reviews) ? data.reviews : [])
+      }
+    } catch (e) {
+      console.error('Error fetching reviews:', e)
+    } finally {
+      setReviewsLoading(false)
     }
   }
 
@@ -174,6 +205,26 @@ export default function AdminDashboard() {
       }
     } catch (e) {
       alert('Failed to release certificate')
+    }
+  }
+
+  const moderateReview = async (reviewId: string, status: ReviewItem['status']) => {
+    try {
+      const res = await fetch('/api/admin/reviews', {
+        method: 'PATCH',
+        headers: { 'x-admin-key': adminKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviewId, status }),
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        setReviews(current => current.map(review => review.id === reviewId ? data.review : review))
+      } else {
+        const err = await res.json()
+        alert(err?.error || 'Failed to update review')
+      }
+    } catch (e) {
+      alert('Failed to update review')
     }
   }
 
@@ -478,6 +529,76 @@ export default function AdminDashboard() {
                   <div className="text-center py-12 text-dark-600">No payments yet</div>
                 )}
               </div>
+            </div>
+
+            {/* Review Moderation */}
+            <div className="card">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <h2 className="text-lg font-bold text-dark-900">Review Moderation</h2>
+                  <p className="text-dark-600 text-sm mt-1">Approve learner reviews before they appear on the public landing page.</p>
+                </div>
+                <button onClick={fetchReviews} className="btn-secondary text-sm">
+                  <RefreshCw size={14} /> Refresh Reviews
+                </button>
+              </div>
+
+              {reviewsLoading ? (
+                <div className="text-dark-600 text-sm py-8 text-center">Loading reviews...</div>
+              ) : reviews.length === 0 ? (
+                <div className="text-center py-8 text-dark-600">No reviews submitted yet</div>
+              ) : (
+                <div className="space-y-4">
+                  {reviews.map(review => (
+                    <div key={review.id} className="rounded-2xl border border-brand-100 bg-brand-50/40 p-4">
+                      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                        <div className="flex items-start gap-3">
+                          <div className="w-11 h-11 rounded-full bg-white border border-brand-100 text-brand-700 font-bold flex items-center justify-center text-sm">
+                            {review.avatar_initials}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-semibold text-dark-900">{review.name}</h3>
+                              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wide bg-white border border-brand-100 text-dark-600">
+                                {review.status}
+                              </span>
+                            </div>
+                            <p className="text-xs text-dark-500 mt-1">{review.role || 'Learner'}</p>
+                            <p className="text-sm text-dark-700 mt-3 leading-relaxed max-w-3xl">{review.comment}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col items-start gap-3 lg:items-end">
+                          <div className="text-sm text-dark-700 font-semibold">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</div>
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              onClick={() => moderateReview(review.id, 'published')}
+                              className="btn-primary px-3 py-2 text-xs"
+                              disabled={review.status === 'published'}
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => moderateReview(review.id, 'pending')}
+                              className="btn-secondary px-3 py-2 text-xs"
+                              disabled={review.status === 'pending'}
+                            >
+                              Set Pending
+                            </button>
+                            <button
+                              onClick={() => moderateReview(review.id, 'hidden')}
+                              className="btn-secondary px-3 py-2 text-xs"
+                              disabled={review.status === 'hidden'}
+                            >
+                              Hide
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </>
         )}

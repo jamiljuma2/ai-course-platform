@@ -109,9 +109,8 @@ export default function TestimonialsSection() {
         return
       }
 
-      setReviews(current => [data.review, ...current])
       setForm(initialForm)
-      toast.success('Thanks for sharing your review!')
+      toast.success(data.message || 'Thanks for sharing your review! It will appear after moderation.')
     } catch {
       toast.error('Network error. Please try again.')
     } finally {
@@ -128,7 +127,7 @@ export default function TestimonialsSection() {
             Real Results and Fresh Reviews
           </h2>
           <p className="text-dark-600 text-lg max-w-2xl mx-auto">
-            Read what learners are saying, then leave your own rating, comment, and story.
+            Read what learners are saying, then leave your own rating, comment, and story. New submissions are reviewed before they go public.
           </p>
           <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-brand-100 bg-brand-50 px-4 py-2 text-sm text-dark-700">
             <Star size={16} className="text-brand-600 fill-brand-600" />
@@ -168,7 +167,7 @@ export default function TestimonialsSection() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-dark-900">What students are saying right now</h3>
-                  <p className="text-dark-600 text-sm">Recent published reviews appear here as soon as they're submitted.</p>
+                  <p className="text-dark-600 text-sm">Approved reviews appear here after moderation.</p>
                 </div>
               </div>
 

@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     rating,
     comment,
     avatar_initials: buildInitials(name),
-    status: 'published' as const,
+    status: 'pending' as const,
   }
 
   const { data, error } = await supabase
@@ -70,5 +70,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to save review' }, { status: 500 })
   }
 
-  return NextResponse.json({ review: data })
+  return NextResponse.json({ review: data, message: 'Review submitted for moderation' })
 }
