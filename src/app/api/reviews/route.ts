@@ -18,7 +18,7 @@ export async function GET() {
   const { data, error } = await supabase
     .from('reviews')
     .select('id, name, role, rating, comment, avatar_initials, status, created_at')
-    .eq('status', 'approved')
+    .in('status', ['approved', 'published'])
     .order('created_at', { ascending: false })
     .limit(12)
 
