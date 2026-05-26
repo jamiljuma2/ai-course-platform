@@ -159,7 +159,10 @@ export default function AdminDashboard() {
       const res = await fetch('/api/admin/release-certificate', {
         method: 'POST',
         headers: { 'x-admin-key': adminKey, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: certEmail }),
+        body: JSON.stringify({
+          email: certEmail.trim() || undefined,
+          user_id: selectedStudent || undefined,
+        }),
       })
       if (res.ok) {
         const d = await res.json()
