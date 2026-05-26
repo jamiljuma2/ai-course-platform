@@ -1,19 +1,26 @@
-import { Star } from 'lucide-react'
+"use client"
 
-const testimonials = [
+import { useEffect, useMemo, useState } from 'react'
+import { Loader2, MessageCircle, Send, Star } from 'lucide-react'
+import toast from 'react-hot-toast'
+
+type Review = {
+  id: string
+  name: string
+  role?: string | null
+  rating: number
+  comment: string
+  avatar_initials: string
+  created_at: string
+}
+
+const featuredTestimonials = [
   {
     name: 'Amina Wanjiku',
     role: 'Virtual Assistant, Nairobi',
     avatar: 'AW',
     rating: 5,
     text: 'Within 3 weeks of starting this course, I landed my first $200 AI writing client on Upwork. The prompt engineering module alone was worth 10x the price.',
-  },
-  {
-    name: 'Brian Otieno',
-    role: 'Marketing Manager, Mombasa',
-    avatar: 'BO',
-    rating: 5,
-    text: 'I use AI to do my team\'s work in half the time now. I\'ve also started a content agency using what I learned. This course completely changed my trajectory.',
   },
   {
     name: 'Faith Muthoni',
@@ -23,67 +30,262 @@ const testimonials = [
     text: 'The automation module is incredible. I set up Zapier workflows that now run my entire client onboarding process automatically. Saved 15 hours a week!',
   },
   {
-    name: 'David Kamau',
-    role: 'Student, Kenyatta University',
-    avatar: 'DK',
-    rating: 5,
-    text: 'I was skeptical at first, but the practical assignments made everything click. I now help local businesses with their AI tools and charge KES 5,000 per setup.',
-  },
-  {
     name: 'Grace Njeri',
     role: 'Entrepreneur, Kisumu',
     avatar: 'GN',
     rating: 5,
     text: 'Built my entire business concept using Module 5. Had AI do the market research, branding, and even my business plan. Absolutely worth every shilling.',
   },
-  {
-    name: 'Samuel Odhiambo',
-    role: 'Content Creator, Eldoret',
-    avatar: 'SO',
-    rating: 5,
-    text: 'The content calendar practical changed my YouTube channel. Went from 0 to 2,000 subscribers in 60 days by posting consistently with AI-generated ideas.',
-  },
 ]
 
+const starArray = [1, 2, 3, 4, 5]
+
+const initialForm = {
+  name: '',
+  role: '',
+  rating: 5,
+  comment: '',
+}
+
 export default function TestimonialsSection() {
+  const [reviews, setReviews] = useState<Review[]>([])
+  const [loadingReviews, setLoadingReviews] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
+  const [form, setForm] = useState(initialForm)
+
+  useEffect(() => {
+    let active = true
+
+    const loadReviews = async () => {
+      try {
+        const res = await fetch('/api/reviews')
+        const data = await res.json()
+        if (active && res.ok) {
+          setReviews(Array.isArray(data.reviews) ? data.reviews : [])
+        }
+      } catch {
+        if (active) setReviews([])
+      } finally {
+        if (active) setLoadingReviews(false)
+      }
+    }
+
+    loadReviews()
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const averageRating = useMemo(() => {
+    if (!reviews.length) return 5
+    return reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+  }, [reviews])
+
+  const submitReview = async (event: React.FormEvent) => {
+    event.preventDefault()
+
+    if (form.name.trim().length < 2) {
+      toast.error('Please enter your name')
+      return
+    }
+
+    if (form.comment.trim().length < 20) {
+      toast.error('Please write at least 20 characters')
+      return
+    }
+
+    setSubmitting(true)
+    try {
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      const data = await res.json()
+
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to submit review')
+        return
+      }
+
+      setReviews(current => [data.review, ...current])
+      setForm(initialForm)
+      toast.success('Thanks for sharing your review!')
+    } catch {
+      toast.error('Network error. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   return (
-    <section className="py-24 bg-white">
+    <section id="reviews" className="py-24 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-16">
           <p className="section-label mb-3">Student Success Stories</p>
           <h2 className="text-4xl md:text-5xl font-bold text-dark-900 mb-4">
-            Real Results from Real Students
+            Real Results and Fresh Reviews
           </h2>
-          <p className="text-dark-600 text-lg">
-            Join hundreds of Kenyans who are already earning with AI.
+          <p className="text-dark-600 text-lg max-w-2xl mx-auto">
+            Read what learners are saying, then leave your own rating, comment, and story.
           </p>
+          <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-brand-100 bg-brand-50 px-4 py-2 text-sm text-dark-700">
+            <Star size={16} className="text-brand-600 fill-brand-600" />
+            <span className="font-semibold">{averageRating.toFixed(1)}</span>
+            <span>average from {reviews.length || featuredTestimonials.length} reviews</span>
+          </div>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {testimonials.map(({ name, role, avatar, rating, text }) => (
-            <div key={name} className="card flex flex-col gap-4 hover:border-brand-200 transition-colors">
-              {/* Stars */}
-              <div className="flex gap-1">
-                {Array.from({ length: rating }).map((_, i) => (
-                  <Star key={i} size={14} className="text-brand-500 fill-brand-500" />
-                ))}
-              </div>
+        <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 items-start">
+          <div className="space-y-6">
+            <div className="grid sm:grid-cols-2 gap-6">
+              {featuredTestimonials.map(({ name, role, avatar, rating, text }) => (
+                <article key={name} className="card flex flex-col gap-4 hover:border-brand-200 transition-colors">
+                  <div className="flex gap-1">
+                    {Array.from({ length: rating }).map((_, index) => (
+                      <Star key={index} size={14} className="text-brand-500 fill-brand-500" />
+                    ))}
+                  </div>
+                  <p className="text-dark-600 text-sm leading-relaxed flex-1">"{text}"</p>
+                  <div className="flex items-center gap-3 pt-2 border-t border-brand-100">
+                    <div className="w-9 h-9 rounded-full bg-brand-50 flex items-center justify-center text-brand-700 text-xs font-bold border border-brand-100">
+                      {avatar}
+                    </div>
+                    <div>
+                      <div className="text-dark-900 text-sm font-semibold">{name}</div>
+                      <div className="text-dark-500 text-xs">{role}</div>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
 
-              {/* Text */}
-              <p className="text-dark-600 text-sm leading-relaxed flex-1">"{text}"</p>
-
-              {/* Author */}
-              <div className="flex items-center gap-3 pt-2 border-t border-brand-100">
-                <div className="w-9 h-9 rounded-full bg-brand-50 flex items-center justify-center text-brand-700 text-xs font-bold border border-brand-100">
-                  {avatar}
+            <div className="card bg-gradient-to-br from-brand-50 via-white to-brand-100/60 border-brand-100">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-11 h-11 rounded-2xl bg-brand-500 text-white flex items-center justify-center shadow-lg shadow-brand-500/20">
+                  <MessageCircle size={20} />
                 </div>
                 <div>
-                  <div className="text-dark-900 text-sm font-semibold">{name}</div>
-                  <div className="text-dark-500 text-xs">{role}</div>
+                  <h3 className="text-2xl font-bold text-dark-900">What students are saying right now</h3>
+                  <p className="text-dark-600 text-sm">Recent published reviews appear here as soon as they're submitted.</p>
                 </div>
               </div>
+
+              {loadingReviews ? (
+                <div className="flex items-center gap-2 text-dark-600 text-sm py-6">
+                  <Loader2 size={16} className="animate-spin text-brand-600" />
+                  Loading recent reviews...
+                </div>
+              ) : reviews.length ? (
+                <div className="space-y-4">
+                  {reviews.slice(0, 4).map(review => (
+                    <article key={review.id} className="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
+                      <div className="flex items-start justify-between gap-4 mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-brand-50 border border-brand-100 text-brand-700 font-bold flex items-center justify-center text-sm">
+                            {review.avatar_initials}
+                          </div>
+                          <div>
+                            <div className="font-semibold text-dark-900">{review.name}</div>
+                            <div className="text-xs text-dark-500">{review.role || 'Verified learner'}</div>
+                          </div>
+                        </div>
+                        <div className="flex gap-0.5">
+                          {starArray.map(star => (
+                            <Star
+                              key={star}
+                              size={14}
+                              className={star <= review.rating ? 'text-brand-500 fill-brand-500' : 'text-brand-100'}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-sm leading-relaxed text-dark-600">{review.comment}</p>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-dashed border-brand-200 bg-white/70 p-5 text-sm text-dark-600">
+                  No public reviews yet. Be the first to share one.
+                </div>
+              )}
             </div>
-          ))}
+          </div>
+
+          <div className="card border-brand-100 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.08)] sticky top-6">
+            <div className="flex items-start gap-3 mb-5">
+              <div className="w-11 h-11 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-700">
+                <Send size={18} />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-dark-900">Leave a review</h3>
+                <p className="text-sm text-dark-600">Tell other learners what changed for you.</p>
+              </div>
+            </div>
+
+            <form onSubmit={submitReview} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-dark-600 mb-2">Your Name</label>
+                <input
+                  value={form.name}
+                  onChange={event => setForm(current => ({ ...current, name: event.target.value }))}
+                  className="w-full rounded-xl border border-brand-100 bg-white px-4 py-3 text-dark-900 outline-none transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                  placeholder="Amina Wanjiku"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-dark-600 mb-2">Role or Title</label>
+                <input
+                  value={form.role}
+                  onChange={event => setForm(current => ({ ...current, role: event.target.value }))}
+                  className="w-full rounded-xl border border-brand-100 bg-white px-4 py-3 text-dark-900 outline-none transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                  placeholder="Student, Freelancer, Entrepreneur..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-dark-600 mb-2">Rating</label>
+                <div className="flex items-center gap-2">
+                  {starArray.map(star => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setForm(current => ({ ...current, rating: star }))}
+                      className="rounded-full p-1 transition-transform hover:scale-110"
+                      aria-label={`Set rating to ${star} star${star === 1 ? '' : 's'}`}
+                    >
+                      <Star
+                        size={22}
+                        className={star <= form.rating ? 'text-brand-500 fill-brand-500' : 'text-brand-200'}
+                      />
+                    </button>
+                  ))}
+                  <span className="ml-2 text-sm text-dark-500">{form.rating}/5</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-dark-600 mb-2">Comment</label>
+                <textarea
+                  value={form.comment}
+                  onChange={event => setForm(current => ({ ...current, comment: event.target.value }))}
+                  className="w-full min-h-[160px] rounded-xl border border-brand-100 bg-white px-4 py-3 text-dark-900 outline-none transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 resize-y"
+                  placeholder="Share what you achieved after taking the course..."
+                />
+                <p className="mt-2 text-xs text-dark-500">Minimum 20 characters.</p>
+              </div>
+
+              <button type="submit" disabled={submitting} className="btn-primary w-full text-base disabled:opacity-60">
+                {submitting ? (
+                  <><Loader2 size={18} className="animate-spin" /> Publishing Review...</>
+                ) : (
+                  'Submit Review'
+                )}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </section>

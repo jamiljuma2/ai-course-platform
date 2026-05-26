@@ -125,6 +125,17 @@ export interface CapstoneProject {
   certificate_issued: boolean
 }
 
+export interface Review {
+  id: string
+  name: string
+  role?: string | null
+  rating: number
+  comment: string
+  avatar_initials: string
+  status: 'published' | 'pending' | 'hidden'
+  created_at: string
+}
+
 // M-Pesa types
 export interface MpesaSTKPushRequest {
   phone: string
