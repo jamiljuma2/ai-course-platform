@@ -127,7 +127,7 @@ export default function AdminDashboard() {
     }
   }
 
-  const fetchStudentsModules = async () => {
+  const fetchStudentsModules = async (keyOverride?: string) => {
     try {
       const res = await fetch('/api/admin/students-modules', {
         headers: { 'x-admin-key': keyOverride || adminKey }
@@ -142,7 +142,7 @@ export default function AdminDashboard() {
     }
   }
 
-  const fetchReviews = async () => {
+  const fetchReviews = async (keyOverride?: string) => {
     setReviewsLoading(true)
     try {
       const res = await fetch('/api/admin/reviews', {
