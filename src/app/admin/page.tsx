@@ -72,6 +72,17 @@ export default function AdminDashboard() {
   const [markingProgress, setMarkingProgress] = useState(false)
   const [progressLoading, setProgressLoading] = useState(false)
 
+  useEffect(() => {
+    const savedAdminKey = window.localStorage.getItem('adminKey')
+    if (!savedAdminKey) {
+      setLoading(false)
+      return
+    }
+
+    setAdminKey(savedAdminKey)
+    fetchStats(savedAdminKey)
+  }, [])
+
   const meetingEndTime = (() => {
     const start = new Date(meetingStartTime)
     const duration = Number(meetingDuration)
@@ -81,20 +92,34 @@ export default function AdminDashboard() {
     return new Date(start.getTime() + duration * 60 * 1000).toLocaleString()
   })()
 
-  const fetchStats = async () => {
+  const fetchStats = async (keyOverride?: string) => {
+    const keyToUse = keyOverride || adminKey
+
+    if (!keyToUse.trim()) {
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
     try {
       const res = await fetch('/api/admin/stats', {
-        headers: { 'x-admin-key': adminKey }
+        headers: { 'x-admin-key': keyToUse }
       })
       if (res.ok) {
         const data = await res.json()
         setStats(data)
+        if (keyToUse !== adminKey) {
+          setAdminKey(keyToUse)
+        }
+        window.localStorage.setItem('adminKey', keyToUse)
         setAuthed(true)
         // Also fetch students and modules
-        fetchStudentsModules()
-        fetchReviews()
+        fetchStudentsModules(keyToUse)
+        fetchReviews(keyToUse)
       } else {
+        window.localStorage.removeItem('adminKey')
+        setAuthed(false)
+        setStats(null)
         alert('Invalid admin key')
       }
     } finally {
@@ -105,7 +130,7 @@ export default function AdminDashboard() {
   const fetchStudentsModules = async () => {
     try {
       const res = await fetch('/api/admin/students-modules', {
-        headers: { 'x-admin-key': adminKey }
+        headers: { 'x-admin-key': keyOverride || adminKey }
       })
       if (res.ok) {
         const data = await res.json()
@@ -121,7 +146,7 @@ export default function AdminDashboard() {
     setReviewsLoading(true)
     try {
       const res = await fetch('/api/admin/reviews', {
-        headers: { 'x-admin-key': adminKey }
+        headers: { 'x-admin-key': keyOverride || adminKey }
       })
       if (res.ok) {
         const data = await res.json()
@@ -366,7 +391,7 @@ export default function AdminDashboard() {
             onKeyDown={e => e.key === 'Enter' && fetchStats()}
             className="w-full bg-white border border-brand-100 rounded-xl px-4 py-3 text-dark-900 mb-4 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
           />
-          <button onClick={fetchStats} className="btn-primary w-full">
+          <button onClick={() => fetchStats()} className="btn-primary w-full">
             Access Dashboard
           </button>
         </div>
