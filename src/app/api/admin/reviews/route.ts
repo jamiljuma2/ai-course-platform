@@ -46,12 +46,25 @@ export async function PATCH(req: NextRequest) {
   const normalizedStatus = status === 'published' ? 'approved' : status
 
   const supabase = createAdminServerClient()
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('reviews')
     .update({ status: normalizedStatus })
     .eq('id', reviewId)
     .select('id, name, role, rating, comment, avatar_initials, status, created_at')
     .single()
+
+  if (error && normalizedStatus === 'approved') {
+    console.warn('Review approval hit a legacy status constraint, falling back to published', error)
+    const fallback = await supabase
+      .from('reviews')
+      .update({ status: 'published' })
+      .eq('id', reviewId)
+      .select('id, name, role, rating, comment, avatar_initials, status, created_at')
+      .single()
+
+    data = fallback.data
+    error = fallback.error
+  }
 
   if (error) {
     console.error('Failed to update review', error)
