@@ -84,5 +84,5 @@ export async function GET(req: NextRequest) {
       email: user.email || '',
     }))
 
-  return NextResponse.json({ students, modules })
+  return NextResponse.json({ students, modules: modulesWithLessons })
 }

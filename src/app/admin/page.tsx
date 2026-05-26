@@ -134,8 +134,8 @@ export default function AdminDashboard() {
       })
       if (res.ok) {
         const data = await res.json()
-        setStudents(data.students)
-        setModules(data.modules)
+        setStudents(Array.isArray(data.students) ? data.students : [])
+        setModules(Array.isArray(data.modules) ? data.modules : [])
       }
     } catch (e) {
       console.error('Error fetching students/modules:', e)
@@ -331,7 +331,7 @@ export default function AdminDashboard() {
     }
 
     const module = modules.find(m => m.id === selectedModule)
-    if (!module || !module.lessons) {
+    if (!module || !Array.isArray(module.lessons)) {
       alert('Module or lessons not found')
       return
     }
@@ -473,7 +473,7 @@ export default function AdminDashboard() {
                 </div>
                 {selectedModule && (
                   <div className="mb-3 p-2 bg-brand-50 border border-brand-100 rounded text-xs text-dark-600">
-                    {modules.find(m => m.id === selectedModule)?.lessons.length || 0} lessons will be marked complete
+                    {modules.find(m => m.id === selectedModule)?.lessons?.length || 0} lessons will be marked complete
                   </div>
                 )}
                 <button 
