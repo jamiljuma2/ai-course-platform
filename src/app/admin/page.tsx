@@ -409,7 +409,7 @@ export default function AdminDashboard() {
             <p className="text-dark-600 text-xs sm:text-sm mt-1">AI for Beginners Course</p>
           </div>
           <div className="flex gap-3">
-            <button onClick={fetchStats} className="btn-secondary text-sm">
+            <button onClick={() => fetchStats()} className="btn-secondary text-sm">
               <RefreshCw size={14} /> Refresh
             </button>
             <button onClick={exportCSV} className="btn-secondary text-sm">
