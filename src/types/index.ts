@@ -132,7 +132,7 @@ export interface Review {
   rating: number
   comment: string
   avatar_initials: string
-  status: 'published' | 'pending' | 'hidden'
+  status: 'approved' | 'pending' | 'hidden' | 'published'
   created_at: string
 }
 

@@ -47,7 +47,7 @@ interface ReviewItem {
   rating: number
   comment: string
   avatar_initials: string
-  status: 'published' | 'pending' | 'hidden'
+  status: 'approved' | 'pending' | 'hidden' | 'published'
   created_at: string
 }
 
@@ -560,7 +560,7 @@ export default function AdminDashboard() {
                             <div className="flex items-center gap-2 flex-wrap">
                               <h3 className="font-semibold text-dark-900">{review.name}</h3>
                               <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wide bg-white border border-brand-100 text-dark-600">
-                                {review.status}
+                                {review.status === 'published' ? 'approved' : review.status}
                               </span>
                             </div>
                             <p className="text-xs text-dark-500 mt-1">{review.role || 'Learner'}</p>
@@ -572,9 +572,9 @@ export default function AdminDashboard() {
                           <div className="text-sm text-dark-700 font-semibold">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</div>
                           <div className="flex flex-wrap gap-2">
                             <button
-                              onClick={() => moderateReview(review.id, 'published')}
+                              onClick={() => moderateReview(review.id, 'approved')}
                               className="btn-primary px-3 py-2 text-xs"
-                              disabled={review.status === 'published'}
+                              disabled={review.status === 'approved'}
                             >
                               Approve
                             </button>

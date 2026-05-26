@@ -39,14 +39,16 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Missing reviewId' }, { status: 400 })
   }
 
-  if (!['published', 'pending', 'hidden'].includes(status)) {
+  if (!['approved', 'pending', 'hidden', 'published'].includes(status)) {
     return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
   }
+
+  const normalizedStatus = status === 'published' ? 'approved' : status
 
   const supabase = createAdminServerClient()
   const { data, error } = await supabase
     .from('reviews')
-    .update({ status })
+    .update({ status: normalizedStatus })
     .eq('id', reviewId)
     .select('id, name, role, rating, comment, avatar_initials, status, created_at')
     .single()
