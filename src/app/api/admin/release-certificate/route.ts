@@ -70,10 +70,14 @@ export async function POST(req: NextRequest) {
   const { data: user } = await supabase.from('users').select('*').eq('id', enrollment.user_id).limit(1).single()
 
   try {
-    if (user?.email) await sendCertificateEmail(user, certificateUrl)
+    let emailSent = false
+    if (user?.email) {
+      await sendCertificateEmail(user, certificateUrl)
+      emailSent = true
+    }
+    return NextResponse.json({ certificateUrl, emailSent })
   } catch (err) {
     console.error('Failed to send certificate email', err)
+    return NextResponse.json({ certificateUrl, emailSent: false })
   }
-
-  return NextResponse.json({ certificateUrl })
 }
