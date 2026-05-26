@@ -70,8 +70,8 @@ export default async function CertificatePage() {
     .eq('course_id', enrollment.course_id)
     .eq('is_active', true)
 
-  const totalLessons = modules?.flatMap((module) => module.lessons || []).filter((lesson) => lesson.lesson_type !== 'assignment').length || 0
-  const completedLessons = progress?.filter((item) => item.completed).length || 0
+  const totalLessons = modules?.flatMap((module) => module.lessons || []).filter((lesson) => lesson.lesson_type !== 'assignment')?.length || 0
+  const completedLessons = progress?.filter((item) => item.completed)?.length || 0
   const progressPct = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0
   const certificateStatus = getCertificateStatus(progressPct, capstoneProject?.status)
 

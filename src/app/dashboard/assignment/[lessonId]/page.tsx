@@ -33,7 +33,7 @@ export default function AssignmentPage() {
         .select('course_id')
         .eq('user_id', user.id)
         .eq('course_access', true)
-        .single()
+        .maybeSingle()
 
       if (!enrollment) {
         setAccessDenied(true)
@@ -45,7 +45,7 @@ export default function AssignmentPage() {
         .from('lessons')
         .select('*, module_id')
         .eq('id', lessonId)
-        .single()
+        .maybeSingle()
 
       if (!lessonData) {
         setAccessDenied(true)
@@ -56,7 +56,7 @@ export default function AssignmentPage() {
         .from('modules')
         .select('course_id')
         .eq('id', lessonData.module_id)
-        .single()
+        .maybeSingle()
 
       if (!moduleData || moduleData.course_id !== enrollment.course_id) {
         setAccessDenied(true)
@@ -122,7 +122,7 @@ export default function AssignmentPage() {
         .from('assignments')
         .select('id')
         .eq('lesson_id', lessonId)
-        .single()
+        .maybeSingle()
 
       if (!assignment) {
         const { data: newAssignment } = await supabase
@@ -134,7 +134,7 @@ export default function AssignmentPage() {
             description: lesson?.content || '',
           })
           .select('id')
-          .single()
+          .maybeSingle()
         assignment = newAssignment
       }
 

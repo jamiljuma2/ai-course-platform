@@ -104,8 +104,8 @@ export default async function DashboardPage() {
   const progressMap = new Map(progress?.map(p => [p.lesson_id, p]) || [])
 
   // Calculate overall progress
-  const totalLessons = modules?.flatMap(m => m.lessons).filter(l => l.lesson_type !== 'assignment').length || 0
-  const completedLessons = progress?.filter(p => p.completed).length || 0
+  const totalLessons = modules?.flatMap(m => m.lessons || []).filter(l => l.lesson_type !== 'assignment')?.length || 0
+  const completedLessons = progress?.filter(p => p.completed)?.length || 0
   const progressPct = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0
   const certificateStatus = getCertificateStatus(progressPct, capstoneProject?.status)
 

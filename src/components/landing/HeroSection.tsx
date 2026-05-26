@@ -46,7 +46,7 @@ export default function HeroSection() {
           .select('course_id')
           .eq('user_id', session.user.id)
           .eq('course_access', true)
-          .single()
+          .maybeSingle()
 
         if (!enrollment) {
           setLoading(false)

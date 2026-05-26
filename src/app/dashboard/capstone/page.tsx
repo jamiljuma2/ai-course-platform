@@ -39,7 +39,7 @@ export default function CapstonePage() {
         .select('course_id')
         .eq('user_id', user.id)
         .eq('course_access', true)
-        .single()
+        .maybeSingle()
 
       if (!enrollment) { toast.error('No active enrollment found'); return }
 
