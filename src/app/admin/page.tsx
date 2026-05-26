@@ -563,7 +563,7 @@ export default function AdminDashboard() {
                   <h2 className="text-lg font-bold text-dark-900">Review Moderation</h2>
                   <p className="text-dark-600 text-sm mt-1">Approve learner reviews before they appear on the public landing page.</p>
                 </div>
-                <button onClick={fetchReviews} className="btn-secondary text-sm">
+                <button onClick={() => fetchReviews()} className="btn-secondary text-sm">
                   <RefreshCw size={14} /> Refresh Reviews
                 </button>
               </div>
