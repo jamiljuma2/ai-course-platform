@@ -202,10 +202,21 @@ export async function sendCertificateEmail(user: User, certificateUrl: string) {
     </div>
   `
 
-  const result = await resend.emails.send({ from: FROM, to: user.email, subject: `Your Course Certificate`, html })
+  try {
+    const result = await resend.emails.send({ from: FROM, to: user.email, subject: `Your Course Certificate`, html })
 
-  const supabase = createAdminServerClient()
-  await supabase.from('email_logs').insert({ user_id: user.id, type: 'certificate', recipient: user.email, subject: `Your Course Certificate`, status: 'sent', provider_id: result.data?.id })
+    const supabase = createAdminServerClient()
+    await supabase.from('email_logs').insert({ user_id: user.id, type: 'certificate', recipient: user.email, subject: `Your Course Certificate`, status: 'sent', provider_id: result.data?.id })
 
-  return result
+    return result
+  } catch (error: any) {
+    console.error('Failed to send certificate email:', error)
+    const supabase = createAdminServerClient()
+    try {
+      await supabase.from('email_logs').insert({ user_id: user.id, type: 'certificate', recipient: user.email, subject: `Your Course Certificate`, status: 'failed', error: String(error?.message || error) })
+    } catch (e) {
+      console.error('Failed to log certificate email error:', e)
+    }
+    throw error
+  }
 }
