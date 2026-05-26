@@ -14,30 +14,6 @@ type Review = {
   created_at: string
 }
 
-const featuredTestimonials = [
-  {
-    name: 'Amina Wanjiku',
-    role: 'Virtual Assistant, Nairobi',
-    avatar: 'AW',
-    rating: 5,
-    text: 'Within 3 weeks of starting this course, I landed my first $200 AI writing client on Upwork. The prompt engineering module alone was worth 10x the price.',
-  },
-  {
-    name: 'Faith Muthoni',
-    role: 'Freelance Designer, Nakuru',
-    avatar: 'FM',
-    rating: 5,
-    text: 'The automation module is incredible. I set up Zapier workflows that now run my entire client onboarding process automatically. Saved 15 hours a week!',
-  },
-  {
-    name: 'Grace Njeri',
-    role: 'Entrepreneur, Kisumu',
-    avatar: 'GN',
-    rating: 5,
-    text: 'Built my entire business concept using Module 5. Had AI do the market research, branding, and even my business plan. Absolutely worth every shilling.',
-  },
-]
-
 const starArray = [1, 2, 3, 4, 5]
 
 const initialForm = {
@@ -127,39 +103,17 @@ export default function TestimonialsSection() {
             Real Results and Fresh Reviews
           </h2>
           <p className="text-dark-600 text-lg max-w-2xl mx-auto">
-            Read what learners are saying, then leave your own rating, comment, and story. New submissions are reviewed before they go public.
+            Read verified learner reviews, then leave your own rating, comment, and story. New submissions are reviewed before they go public.
           </p>
           <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-brand-100 bg-brand-50 px-4 py-2 text-sm text-dark-700">
             <Star size={16} className="text-brand-600 fill-brand-600" />
             <span className="font-semibold">{averageRating.toFixed(1)}</span>
-            <span>average from {reviews.length || featuredTestimonials.length} reviews</span>
+            <span>average from {reviews.length} verified reviews</span>
           </div>
         </div>
 
         <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 items-start">
           <div className="space-y-6">
-            <div className="grid sm:grid-cols-2 gap-6">
-              {featuredTestimonials.map(({ name, role, avatar, rating, text }) => (
-                <article key={name} className="card flex flex-col gap-4 hover:border-brand-200 transition-colors">
-                  <div className="flex gap-1">
-                    {Array.from({ length: rating }).map((_, index) => (
-                      <Star key={index} size={14} className="text-brand-500 fill-brand-500" />
-                    ))}
-                  </div>
-                  <p className="text-dark-600 text-sm leading-relaxed flex-1">"{text}"</p>
-                  <div className="flex items-center gap-3 pt-2 border-t border-brand-100">
-                    <div className="w-9 h-9 rounded-full bg-brand-50 flex items-center justify-center text-brand-700 text-xs font-bold border border-brand-100">
-                      {avatar}
-                    </div>
-                    <div>
-                      <div className="text-dark-900 text-sm font-semibold">{name}</div>
-                      <div className="text-dark-500 text-xs">{role}</div>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-
             <div className="card bg-gradient-to-br from-brand-50 via-white to-brand-100/60 border-brand-100">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-11 h-11 rounded-2xl bg-brand-500 text-white flex items-center justify-center shadow-lg shadow-brand-500/20">
@@ -167,7 +121,7 @@ export default function TestimonialsSection() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-dark-900">What students are saying right now</h3>
-                  <p className="text-dark-600 text-sm">Approved reviews appear here after moderation.</p>
+                  <p className="text-dark-600 text-sm">Only approved reviews from real learners appear here after moderation.</p>
                 </div>
               </div>
 
@@ -206,7 +160,7 @@ export default function TestimonialsSection() {
                 </div>
               ) : (
                 <div className="rounded-2xl border border-dashed border-brand-200 bg-white/70 p-5 text-sm text-dark-600">
-                  No public reviews yet. Be the first to share one.
+                  No verified reviews yet. Be the first to share one.
                 </div>
               )}
             </div>
