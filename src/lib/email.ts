@@ -110,6 +110,10 @@ export async function sendEnrollmentEmail(user: User, course: Course) {
       html,
     })
 
+    if (result.error) {
+      throw new Error(result.error.message || 'Failed to send enrollment email')
+    }
+
     // Log email
     const supabase = createAdminServerClient()
     await supabase.from('email_logs').insert({
@@ -182,6 +186,10 @@ export async function sendMeetingNotification(user: User, meeting: any) {
 
   const result = await resend.emails.send({ from: FROM, to: user.email, subject: `Live Session: ${meeting.title}`, html })
 
+  if (result.error) {
+    throw new Error(result.error.message || 'Failed to send meeting notification')
+  }
+
   // log
   const supabase = createAdminServerClient()
   await supabase.from('email_logs').insert({ user_id: user.id, type: 'meeting_notification', recipient: user.email, subject: `Live Session: ${meeting.title}`, status: 'sent', provider_id: result.data?.id })
@@ -204,6 +212,10 @@ export async function sendCertificateEmail(user: User, certificateUrl: string) {
 
   try {
     const result = await resend.emails.send({ from: FROM, to: user.email, subject: `Your Course Certificate`, html })
+
+    if (result.error) {
+      throw new Error(result.error.message || 'Failed to send certificate email')
+    }
 
     const supabase = createAdminServerClient()
     await supabase.from('email_logs').insert({ user_id: user.id, type: 'certificate', recipient: user.email, subject: `Your Course Certificate`, status: 'sent', provider_id: result.data?.id })
