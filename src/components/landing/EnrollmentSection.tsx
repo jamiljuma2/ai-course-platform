@@ -9,21 +9,16 @@ type Step = 'form' | 'pending' | 'success' | 'failed'
 
 export default function EnrollmentSection() {
   const searchParams = useSearchParams()
+  const initialCourseSlug = getCourseOption(searchParams.get('course')).slug
   const [step, setStep] = useState<Step>('form')
   const [loading, setLoading] = useState(false)
   const [checkoutRequestId, setCheckoutRequestId] = useState('')
   const [receiptNo, setReceiptNo] = useState('')
   const [pollCount, setPollCount] = useState(0)
-  const [selectedCourseSlug, setSelectedCourseSlug] = useState(COURSE_OPTIONS[0].slug)
+  const [selectedCourseSlug, setSelectedCourseSlug] = useState(initialCourseSlug)
 
   const [form, setForm] = useState({ name: '', email: '', phone: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
-
-  useEffect(() => {
-    const courseParam = searchParams.get('course')
-    const selected = getCourseOption(courseParam)
-    setSelectedCourseSlug(selected.slug)
-  }, [searchParams])
 
   const selectedCourse = getCourseOption(selectedCourseSlug)
 
