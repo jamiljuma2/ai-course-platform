@@ -16,12 +16,12 @@ const jetbrains = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'AI for Beginners – Practical AI Skills | Kenya',
-  description: 'Master AI tools to earn more, work smarter, and build a profitable digital career. Enroll for KES 3,000. Pay with M-Pesa.',
-  keywords: 'AI course Kenya, ChatGPT training, freelancing AI, M-Pesa course, online learning Kenya',
+  title: 'Practical Skills Courses | Kenya',
+  description: 'Choose practical courses in AI and web development. Pay with M-Pesa and start learning with lifetime access.',
+  keywords: 'online courses Kenya, AI course Kenya, web development course, M-Pesa course, practical skills',
   openGraph: {
-    title: 'AI for Beginners – Practical AI Skills',
-    description: 'Join 500+ Kenyans mastering AI for income and career growth.',
+    title: 'Practical Skills Courses',
+    description: 'Choose a practical course and start building job-ready skills.',
     type: 'website',
     images: [
       {

@@ -68,8 +68,8 @@ export default function NavBar() {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">
-          <a href="#modules" className="text-sm text-dark-600 hover:text-brand-600 transition-colors">Modules</a>
-          <a href="#pricing" className="text-sm text-dark-600 hover:text-brand-600 transition-colors">Pricing</a>
+          <a href="#courses" className="text-sm text-dark-600 hover:text-brand-600 transition-colors">Courses</a>
+          <a href="#enroll" className="text-sm text-dark-600 hover:text-brand-600 transition-colors">Enroll</a>
           {!loading && user && (
             <Link href="/dashboard" className="text-sm text-dark-600 hover:text-brand-600 transition-colors">Dashboard</Link>
           )}
@@ -97,7 +97,7 @@ export default function NavBar() {
               ) : (
                 <>
                   <Link href="/login" className="text-sm text-dark-600 hover:text-brand-600 transition-colors">Sign In</Link>
-                  <a href="#enroll" className="btn-primary py-2 px-5 text-sm">Enroll Now</a>
+                  <a href="#courses" className="btn-primary py-2 px-5 text-sm">Choose Course</a>
                 </>
               )}
             </>
@@ -116,8 +116,9 @@ export default function NavBar() {
       {/* Mobile dropdown */}
       {open && (
         <div className="md:hidden bg-white border-t border-brand-100 px-4 py-4 space-y-4 shadow-lg">
-          <a href="#modules" onClick={() => setOpen(false)} className="block text-dark-600 hover:text-brand-600">Modules</a>
-          <a href="#pricing" onClick={() => setOpen(false)} className="block text-dark-600 hover:text-brand-600">Pricing</a>
+          <a href="#courses" onClick={() => setOpen(false)} className="block text-dark-600 hover:text-brand-600">Courses</a>
+          {/* Curriculum link removed to avoid exposing module details to users */}
+          <a href="#enroll" onClick={() => setOpen(false)} className="block text-dark-600 hover:text-brand-600">Enroll</a>
           {!loading && user && (
             <Link href="/dashboard" onClick={() => setOpen(false)} className="block text-dark-600 hover:text-brand-600">Dashboard</Link>
           )}
@@ -148,7 +149,7 @@ export default function NavBar() {
               ) : (
                 <>
                   <Link href="/login" onClick={() => setOpen(false)} className="block text-dark-600 hover:text-brand-600">Sign In</Link>
-                  <a href="#enroll" onClick={() => setOpen(false)} className="btn-primary w-full text-center">Enroll Now</a>
+                  <a href="#courses" onClick={() => setOpen(false)} className="btn-primary w-full text-center">Choose Course</a>
                 </>
               )}
             </>

@@ -38,7 +38,7 @@ export async function sendEnrollmentEmail(user: User, course: Course) {
         <tr>
           <td style="background:linear-gradient(135deg,#e8820f,#f7982d);padding:40px 40px 30px;text-align:center;">
             <p style="margin:0 0 8px;font-size:13px;color:rgba(255,255,255,0.8);text-transform:uppercase;letter-spacing:2px;">YOU'RE IN!</p>
-            <h1 style="margin:0;font-size:28px;font-weight:700;color:#fff;">Welcome to AI for Beginners 🎉</h1>
+            <h1 style="margin:0;font-size:28px;font-weight:700;color:#fff;">Welcome to ${course.title} 🎉</h1>
           </td>
         </tr>
 
@@ -51,6 +51,13 @@ export async function sendEnrollmentEmail(user: User, course: Course) {
             <p style="margin:0 0 24px;font-size:16px;color:#a1a1aa;line-height:1.7;">
               Your enrollment is confirmed and payment received. You now have <strong style="color:#f7982d;">full access</strong> to all 8 modules, lessons, and practical assignments.
             </p>
+
+            ${course.description ? `
+            <div style="background:#18181b;border-radius:12px;padding:20px;margin-bottom:24px;">
+              <h3 style="margin:0 0 10px;color:#fff;font-size:16px;">Course Overview</h3>
+              <p style="margin:0;color:#a1a1aa;line-height:1.7;">${course.description}</p>
+            </div>
+            ` : ''}
 
             <!-- CTA -->
             <table cellpadding="0" cellspacing="0" style="margin:0 auto 32px;">
@@ -66,16 +73,7 @@ export async function sendEnrollmentEmail(user: User, course: Course) {
             <!-- What's Inside -->
             <div style="background:#18181b;border-radius:12px;padding:24px;margin-bottom:24px;">
               <h3 style="margin:0 0 16px;color:#fff;font-size:16px;">📚 What You'll Learn</h3>
-              <ul style="margin:0;padding:0 0 0 20px;color:#a1a1aa;line-height:2;">
-                <li>Introduction to AI & the Digital Economy</li>
-                <li>Mastering ChatGPT & Prompt Engineering</li>
-                <li>AI for Content Creation & Social Media</li>
-                <li>AI for Freelancing & Income Generation</li>
-                <li>AI for Business & Entrepreneurship</li>
-                <li>AI Automation with Zapier & Make</li>
-                <li>Building AI Tools & Apps</li>
-                <li>Monetization Strategies & Career Paths</li>
-              </ul>
+              <p style="margin:0;color:#a1a1aa;line-height:1.7;">Open your dashboard to continue with your selected course, complete lessons, and track progress toward certification.</p>
             </div>
 
             <!-- Schedule -->
@@ -106,7 +104,7 @@ export async function sendEnrollmentEmail(user: User, course: Course) {
     const result = await resend.emails.send({
       from: FROM,
       to: user.email,
-      subject: `You're Enrolled – AI for Beginners 🎉`,
+      subject: `You're Enrolled – ${course.title} 🎉`,
       html,
     })
 
@@ -120,7 +118,7 @@ export async function sendEnrollmentEmail(user: User, course: Course) {
       user_id: user.id,
       type: 'enrollment_confirmation',
       recipient: user.email,
-      subject: `You're Enrolled – AI for Beginners 🎉`,
+      subject: `You're Enrolled – ${course.title} 🎉`,
       status: 'sent',
       provider_id: result.data?.id,
     })
@@ -138,7 +136,7 @@ export async function sendPaymentFailedEmail(email: string, name: string, reason
   await resend.emails.send({
     from: FROM,
     to: email,
-    subject: 'Payment Issue – AI for Beginners',
+    subject: 'Payment Issue – Course Enrollment',
     html: `
       <div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:40px 20px;">
         <h2 style="color:#e8820f;">Payment Not Completed</h2>

@@ -49,17 +49,17 @@ export default async function DashboardPage() {
             AI
           </div>
           <h1 className="text-3xl font-bold text-dark-900 mb-4">Welcome, {profile?.name?.split(' ')[0]}!</h1>
-          <p className="text-dark-600 mb-8">You're logged in, but not yet enrolled in any courses.</p>
+          <p className="text-dark-600 mb-8">You're logged in, but not yet enrolled in a course.</p>
           
           <div className="card p-8 mb-6 soft-glow">
             <p className="text-dark-600 mb-6">
-              Enroll in <span className="text-brand-700 font-semibold">AI for Beginners</span> to get started:
+              Choose a course to get started:
             </p>
-            <Link href="/#enroll" className="btn-primary w-full inline-block mb-4">
-              Enroll for KES 3,000
+            <Link href="/#courses" className="btn-primary w-full inline-block mb-4">
+              Browse Courses
             </Link>
             <Link href="/" className="btn-secondary w-full inline-block">
-              View Course Info
+              View Platform
             </Link>
           </div>
 
@@ -113,7 +113,7 @@ export default async function DashboardPage() {
     <DashboardClient
       profile={profile}
       enrollment={enrollment}
-      modules={modules || []}
+      modules={profile?.role === 'student' ? [] : (modules || [])}
       progressMap={Object.fromEntries(progressMap)}
       progressPct={progressPct}
       totalLessons={totalLessons}

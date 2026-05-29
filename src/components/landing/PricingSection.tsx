@@ -1,7 +1,7 @@
 import { Check, ArrowRight } from 'lucide-react'
 
 const features = [
-  '8 structured modules with practical outcomes',
+  'Structured curriculum with practical outcomes',
   'Practical assignment per module',
   'Final capstone project',
   'Certificate of completion',

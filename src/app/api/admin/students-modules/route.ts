@@ -8,11 +8,12 @@ export async function GET(req: NextRequest) {
   }
 
   const supabase = createAdminServerClient()
+  const courseSlug = req.nextUrl.searchParams.get('courseSlug') || 'ai-for-beginners'
 
   const { data: course, error: courseError } = await supabase
     .from('courses')
     .select('id')
-    .eq('slug', 'ai-for-beginners')
+    .eq('slug', courseSlug)
     .single()
 
   if (courseError || !course) {

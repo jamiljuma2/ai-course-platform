@@ -1,9 +1,9 @@
-'use client'
+"use client"
 import { useState } from 'react'
 import {
-  BookOpen, CheckCircle2, Circle, Lock, Play, FileText,
+  BookOpen, CheckCircle2, Play, FileText,
   Award, Clock, TrendingUp, LogOut, Menu, X, ChevronRight,
-  ClipboardList, Zap
+  ClipboardList
 } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -33,6 +33,7 @@ export default function DashboardClient({
   const [localProgress, setLocalProgress] = useState(progressMap)
 
   const supabase = createClient()
+  const isStudent = profile?.role === 'student'
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -129,58 +130,58 @@ export default function DashboardClient({
             <div className="text-xs text-dark-500 mt-2">{completedCount} of {totalLessons} lessons done</div>
           </div>
 
-          {/* Module list */}
-          <nav className="flex-1 overflow-y-auto py-4 space-y-1 px-3">
-            {modules.map(mod => {
-              const modLessons = mod.lessons?.filter(l => l.is_active).sort((a, b) => a.order_index - b.order_index) || []
-              const modCompleted = modLessons.filter(l => localProgress[l.id]?.completed).length
-              const isActive = activeModule?.id === mod.id
+          {/* Module list (hidden for students) */}
+          {!isStudent && (
+            <nav className="flex-1 overflow-y-auto py-4 space-y-1 px-3">
+              {modules.map(mod => {
+                const modLessons = mod.lessons?.filter(l => l.is_active).sort((a, b) => a.order_index - b.order_index) || []
+                const modCompleted = modLessons.filter(l => localProgress[l.id]?.completed).length
+                const isActive = activeModule?.id === mod.id
 
-              return (
-                <div key={mod.id}>
-                  <button
-                    onClick={() => {
-                      setActiveModule(isActive ? null : mod)
-                      if (!isActive && modLessons.length > 0) {
-                        setActiveLesson(modLessons[0])
-                      }
-                    }}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors ${
-                      isActive ? 'bg-brand-50 text-dark-900 border border-brand-100' : 'text-dark-500 hover:text-brand-700 hover:bg-brand-50'
-                    }`}
-                  >
-                    <div className="w-6 h-6 rounded bg-brand-50 border border-brand-100 flex items-center justify-center text-xs font-bold text-brand-700 shrink-0">
-                      {mod.order_index}
-                    </div>
-                    <span className="text-xs flex-1 leading-tight">{mod.title}</span>
-                    <span className="text-xs text-dark-500 shrink-0">{modCompleted}/{modLessons.length}</span>
-                  </button>
+                return (
+                  <div key={mod.id}>
+                    <button
+                      onClick={() => {
+                        setActiveModule(isActive ? null : mod)
+                        if (!isActive && modLessons.length > 0) {
+                          setActiveLesson(modLessons[0])
+                        }
+                      }}
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors ${
+                        isActive ? 'bg-brand-50 text-dark-900 border border-brand-100' : 'text-dark-500 hover:text-brand-700 hover:bg-brand-50'
+                      }`}>
+                      <div className="w-6 h-6 rounded bg-brand-50 border border-brand-100 flex items-center justify-center text-xs font-bold text-brand-700 shrink-0">
+                        {mod.order_index}
+                      </div>
+                      <span className="text-xs flex-1 leading-tight">{mod.title}</span>
+                      <span className="text-xs text-dark-500 shrink-0">{modCompleted}/{modLessons.length}</span>
+                    </button>
 
-                  {isActive && (
-                    <div className="ml-4 mt-1 space-y-0.5">
-                      {modLessons.map(lesson => (
-                        <button
-                          key={lesson.id}
-                          onClick={() => { setActiveLesson(lesson); setSidebarOpen(false) }}
-                          className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left transition-colors ${
-                            activeLesson?.id === lesson.id
-                              ? 'bg-brand-100 text-dark-900 border border-brand-100'
-                              : 'text-dark-500 hover:text-brand-700 hover:bg-brand-50'
-                          }`}
-                        >
-                          {getLessonIcon(lesson)}
-                          <span className="text-xs flex-1 leading-tight">{lesson.title}</span>
-                          {lesson.duration_min > 0 && (
-                            <span className="text-xs text-dark-500 shrink-0">{lesson.duration_min}m</span>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </nav>
+                    {isActive && (
+                      <div className="ml-4 mt-1 space-y-0.5">
+                        {modLessons.map(lesson => (
+                          <button
+                            key={lesson.id}
+                            onClick={() => { setActiveLesson(lesson); setSidebarOpen(false) }}
+                            className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left transition-colors ${
+                              activeLesson?.id === lesson.id
+                                ? 'bg-brand-100 text-dark-900 border border-brand-100'
+                                : 'text-dark-500 hover:text-brand-700 hover:bg-brand-50'
+                            }`}>
+                            {getLessonIcon(lesson)}
+                            <span className="text-xs flex-1 leading-tight">{lesson.title}</span>
+                            {lesson.duration_min > 0 && (
+                              <span className="text-xs text-dark-500 shrink-0">{lesson.duration_min}m</span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </nav>
+          )}
 
           {/* Capstone */}
           <div className="p-4 border-t border-brand-100">
@@ -217,22 +218,26 @@ export default function DashboardClient({
 
               {/* Stats */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-                {[
-                  { label: 'Progress', value: `${currentPct}%`, icon: TrendingUp },
-                  { label: 'Lessons Done', value: `${completedCount}/${totalLessons}`, icon: CheckCircle2 },
-                  { label: 'Modules', value: `${modules.length}`, icon: BookOpen },
-                  { label: 'Certificate', value: certificateReady ? 'Generate' : `${currentPct}%`, icon: Award, href: certificateReady ? '/dashboard/certificate' : '/dashboard/capstone' },
-                ].map(({ label, value, icon: Icon, href }) => (
-                  <Link key={label} href={href || '#'} className="card text-center py-4 hover:border-brand-200 transition-all hover:-translate-y-0.5">
-                    <Icon size={20} className="text-brand-600 mx-auto mb-2" />
-                    <div className="text-xl font-bold text-dark-900">{value}</div>
-                    <div className="text-xs text-dark-500 mt-0.5">{label}</div>
-                  </Link>
-                ))}
+                {(() => {
+                  const stats = [
+                    { label: 'Progress', value: `${currentPct}%`, icon: TrendingUp },
+                    { label: 'Lessons Done', value: `${completedCount}/${totalLessons}`, icon: CheckCircle2 },
+                    ...(!isStudent ? [{ label: 'Modules', value: `${modules.length}`, icon: BookOpen }] : []),
+                    { label: 'Certificate', value: certificateReady ? 'Generate' : `${currentPct}%`, icon: Award, href: certificateReady ? '/dashboard/certificate' : '/dashboard/capstone' },
+                  ]
+
+                  return stats.map(({ label, value, icon: Icon, href }) => (
+                    <Link key={label} href={href || '#'} className="card text-center py-4 hover:border-brand-200 transition-all hover:-translate-y-0.5">
+                      <Icon size={20} className="text-brand-600 mx-auto mb-2" />
+                      <div className="text-xl font-bold text-dark-900">{value}</div>
+                      <div className="text-xs text-dark-500 mt-0.5">{label}</div>
+                    </Link>
+                  ))
+                })()}
               </div>
 
               {/* Continue button */}
-              {modules[0]?.lessons?.length > 0 && (
+              {!isStudent && modules[0]?.lessons?.length > 0 && (
                 <button
                   onClick={() => {
                     const firstMod = modules[0]
@@ -246,44 +251,48 @@ export default function DashboardClient({
                 </button>
               )}
 
-              {/* Module cards */}
-              <h2 className="text-lg font-bold text-dark-900 mb-4">All Modules</h2>
-              <div className="space-y-3">
-                {modules.map(mod => {
-                  const modLessons = mod.lessons?.filter(l => l.is_active) || []
-                  const modDone = modLessons.filter(l => localProgress[l.id]?.completed).length
-                  const pct = modLessons.length > 0 ? Math.round((modDone / modLessons.length) * 100) : 0
+              {/* Module cards (hidden for students) */}
+              {!isStudent && (
+                <>
+                  <h2 className="text-lg font-bold text-dark-900 mb-4">All Modules</h2>
+                  <div className="space-y-3">
+                    {modules.map(mod => {
+                      const modLessons = mod.lessons?.filter(l => l.is_active) || []
+                      const modDone = modLessons.filter(l => localProgress[l.id]?.completed).length
+                      const pct = modLessons.length > 0 ? Math.round((modDone / modLessons.length) * 100) : 0
 
-                  return (
-                    <button
-                      key={mod.id}
-                      onClick={() => {
-                        const sorted = modLessons.sort((a, b) => a.order_index - b.order_index)
-                        setActiveModule(mod)
-                        setActiveLesson(sorted[0] || null)
-                      }}
-                        className="w-full card hover:border-brand-200 transition-all text-left flex items-center gap-4 hover:-translate-y-0.5"
-                    >
-                        <div className="w-10 h-10 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-700 font-bold text-sm shrink-0">
-                        {mod.order_index < 10 ? `0${mod.order_index}` : mod.order_index}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                          <div className="text-dark-900 font-medium text-sm">{mod.title}</div>
-                        <div className="flex items-center gap-2 mt-1">
-                            <div className="flex-1 h-1.5 bg-brand-100 rounded-full overflow-hidden">
-                            <div
-                                className="h-full bg-brand-500 rounded-full shadow-[0_0_14px_rgba(47,184,92,0.35)]"
-                              style={{ width: `${pct}%` }}
-                            />
+                      return (
+                        <button
+                          key={mod.id}
+                          onClick={() => {
+                            const sorted = modLessons.sort((a, b) => a.order_index - b.order_index)
+                            setActiveModule(mod)
+                            setActiveLesson(sorted[0] || null)
+                          }}
+                          className="w-full card hover:border-brand-200 transition-all text-left flex items-center gap-4 hover:-translate-y-0.5"
+                        >
+                          <div className="w-10 h-10 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-700 font-bold text-sm shrink-0">
+                            {mod.order_index < 10 ? `0${mod.order_index}` : mod.order_index}
                           </div>
-                            <span className="text-xs text-dark-500 shrink-0">{modDone}/{modLessons.length}</span>
-                        </div>
-                      </div>
-                        {pct === 100 && <CheckCircle2 size={18} className="text-brand-600 shrink-0" />}
-                    </button>
-                  )
-                })}
-              </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-dark-900 font-medium text-sm">{mod.title}</div>
+                            <div className="flex items-center gap-2 mt-1">
+                              <div className="flex-1 h-1.5 bg-brand-100 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-brand-500 rounded-full shadow-[0_0_14px_rgba(47,184,92,0.35)]"
+                                  style={{ width: `${pct}%` }}
+                                />
+                              </div>
+                              <span className="text-xs text-dark-500 shrink-0">{modDone}/{modLessons.length}</span>
+                            </div>
+                          </div>
+                          {pct === 100 && <CheckCircle2 size={18} className="text-brand-600 shrink-0" />}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </>
+              )}
             </div>
           ) : (
             /* Lesson viewer */

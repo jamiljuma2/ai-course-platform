@@ -1,21 +1,31 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Smartphone, Loader2, CheckCircle2, XCircle, ArrowRight } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { COURSE_OPTIONS, getCourseOption } from '@/lib/course-options'
 
 type Step = 'form' | 'pending' | 'success' | 'failed'
 
-const COURSE_ID = process.env.NEXT_PUBLIC_COURSE_ID || 'ai-for-beginners'
-
 export default function EnrollmentSection() {
+  const searchParams = useSearchParams()
   const [step, setStep] = useState<Step>('form')
   const [loading, setLoading] = useState(false)
   const [checkoutRequestId, setCheckoutRequestId] = useState('')
   const [receiptNo, setReceiptNo] = useState('')
   const [pollCount, setPollCount] = useState(0)
+  const [selectedCourseSlug, setSelectedCourseSlug] = useState(COURSE_OPTIONS[0].slug)
 
   const [form, setForm] = useState({ name: '', email: '', phone: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    const courseParam = searchParams.get('course')
+    const selected = getCourseOption(courseParam)
+    setSelectedCourseSlug(selected.slug)
+  }, [searchParams])
+
+  const selectedCourse = getCourseOption(selectedCourseSlug)
 
   const validate = () => {
     const e: Record<string, string> = {}
@@ -33,9 +43,13 @@ export default function EnrollmentSection() {
 
     setLoading(true)
     try {
-      // First get course ID
-      const courseRes = await fetch('/api/courses/slug/ai-for-beginners')
+      const courseRes = await fetch(`/api/courses/slug/${selectedCourse.slug}`)
       const courseData = await courseRes.json()
+
+      if (!courseRes.ok) {
+        toast.error(courseData.error || 'Selected course is not available')
+        return
+      }
 
       const res = await fetch('/api/mpesa/initiate', {
         method: 'POST',
@@ -102,6 +116,14 @@ export default function EnrollmentSection() {
       errors[field] ? 'border-red-500' : 'border-brand-100 hover:border-brand-300 focus:border-brand-500'
     }`
 
+  const selectCourse = (slug: string) => {
+    setSelectedCourseSlug(slug)
+    setStep('form')
+    setCheckoutRequestId('')
+    setReceiptNo('')
+    setPollCount(0)
+  }
+
   return (
     <section id="enroll" className="py-24 bg-brand-50/60 border-y border-brand-50">
       <div className="max-w-xl mx-auto px-4 sm:px-6">
@@ -115,6 +137,34 @@ export default function EnrollmentSection() {
           {/* --- FORM STEP --- */}
           {step === 'form' && (
             <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="block text-sm font-medium text-dark-600 mb-2">Choose Your Course</label>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {COURSE_OPTIONS.map(course => {
+                    const active = course.slug === selectedCourse.slug
+                    return (
+                      <button
+                        key={course.slug}
+                        type="button"
+                        onClick={() => selectCourse(course.slug)}
+                        className={`text-left rounded-xl border p-4 transition-all ${
+                          active
+                            ? 'border-brand-500 bg-brand-50 shadow-sm'
+                            : 'border-brand-100 bg-white hover:border-brand-300'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-3 mb-2">
+                          <div className="font-semibold text-dark-900 text-sm">{course.title}</div>
+                          <div className="text-brand-700 font-bold text-sm">KES {course.priceKes.toLocaleString()}</div>
+                        </div>
+                        <p className="text-xs text-dark-500 leading-relaxed">{course.description}</p>
+                        <div className="text-xs text-dark-500 mt-2">{course.duration}</div>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-dark-600 mb-2">Full Name</label>
                 <input
@@ -158,10 +208,10 @@ export default function EnrollmentSection() {
               {/* Summary */}
               <div className="bg-brand-50 rounded-xl p-4 flex items-center justify-between border border-brand-100">
                 <div>
-                  <div className="text-sm text-dark-900 font-medium">AI for Beginners Course</div>
-                  <div className="text-xs text-dark-500">Lifetime access · 8 modules</div>
+                  <div className="text-sm text-dark-900 font-medium">{selectedCourse.title}</div>
+                  <div className="text-xs text-dark-500">Lifetime access · {selectedCourse.duration}</div>
                 </div>
-                <div className="text-xl font-bold text-brand-700">KES 3,000</div>
+                <div className="text-xl font-bold text-brand-700">KES {selectedCourse.priceKes.toLocaleString()}</div>
               </div>
 
               <button
@@ -172,7 +222,7 @@ export default function EnrollmentSection() {
                 {loading ? (
                   <><Loader2 size={18} className="animate-spin" /> Initiating Payment...</>
                 ) : (
-                  <>Pay KES 3,000 via M-Pesa <ArrowRight size={18} /></>
+                  <>Pay KES {selectedCourse.priceKes.toLocaleString()} via M-Pesa <ArrowRight size={18} /></>
                 )}
               </button>
 
@@ -225,7 +275,7 @@ export default function EnrollmentSection() {
                 </div>
               )}
               <p className="text-dark-600 mb-6">
-                Welcome to <strong className="text-dark-900">AI for Beginners!</strong> Check your email at{' '}
+                Welcome to <strong className="text-dark-900">{selectedCourse.title}!</strong> Check your email at{' '}
                 <span className="text-brand-700">{form.email}</span> for your access details.
               </p>
               <a href="/dashboard" className="btn-primary w-full">

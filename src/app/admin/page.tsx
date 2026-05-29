@@ -402,7 +402,7 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-dark-900">Admin Dashboard</h1>
-            <p className="text-dark-600 text-xs sm:text-sm mt-1">AI for Beginners Course</p>
+            <p className="text-dark-600 text-xs sm:text-sm mt-1">Multi-course platform</p>
           </div>
           <div className="flex gap-3">
             <button onClick={() => fetchStats()} className="btn-secondary text-sm">
