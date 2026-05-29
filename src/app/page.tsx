@@ -1,4 +1,5 @@
 // app/page.tsx — Full Landing Page
+import React, { Suspense } from 'react'
 import HeroSection from '@/components/landing/HeroSection'
 import CoursesSection from '@/components/landing/CoursesSection'
 import BenefitsSection from '@/components/landing/BenefitsSection'
@@ -11,12 +12,16 @@ import NavBar from '@/components/landing/NavBar'
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-white overflow-x-hidden text-dark-900">
-      <NavBar />
-      <HeroSection />
+      <Suspense fallback={<div />}> 
+        <NavBar />
+        <HeroSection />
+      </Suspense>
       <CoursesSection />
       <BenefitsSection />
       <TestimonialsSection />
-      <EnrollmentSection />
+      <Suspense fallback={<div />}>{/* Enrollment uses client hooks (search params) */}
+        <EnrollmentSection />
+      </Suspense>
       <FooterSection />
     </main>
   )
