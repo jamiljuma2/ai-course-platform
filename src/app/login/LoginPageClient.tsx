@@ -150,8 +150,7 @@ export default function LoginPageClient() {
         </Link>
 
         <div className="card">
-          <div className="flex bg-dark-700 rounded-xl p-1 mb-6">
-            <div className="flex bg-white rounded-xl p-1 mb-6">
+          <div className="flex bg-white rounded-xl p-1 mb-6">
             {(['login', 'signup'] as const).map((t) => (
               <button
                 key={t}
