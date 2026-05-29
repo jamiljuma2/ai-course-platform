@@ -15,7 +15,10 @@ const jetbrains = JetBrains_Mono({
   display: 'swap',
 })
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+
 export const metadata: Metadata = {
+  metadataBase: new URL(APP_URL),
   title: 'Practical Skills Courses | Kenya',
   description: 'Choose practical courses in AI and web development. Pay with M-Pesa and start learning with lifetime access.',
   keywords: 'online courses Kenya, AI course Kenya, web development course, M-Pesa course, practical skills',
