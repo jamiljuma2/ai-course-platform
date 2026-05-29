@@ -51,6 +51,17 @@ interface ReviewItem {
   created_at: string
 }
 
+interface CourseItem {
+  id: string
+  title: string
+  slug: string
+  description: string | null
+  price_kes: number
+  thumbnail?: string | null
+  is_active: boolean
+  created_at: string
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
@@ -66,11 +77,21 @@ export default function AdminDashboard() {
   const [modules, setModules] = useState<Module[]>([])
   const [reviews, setReviews] = useState<ReviewItem[]>([])
   const [reviewsLoading, setReviewsLoading] = useState(false)
+  const [courses, setCourses] = useState<CourseItem[]>([])
+  const [coursesLoading, setCoursesLoading] = useState(false)
   const [selectedStudent, setSelectedStudent] = useState('')
   const [selectedModule, setSelectedModule] = useState('')
   const [completedLessonIds, setCompletedLessonIds] = useState<string[]>([])
   const [markingProgress, setMarkingProgress] = useState(false)
   const [progressLoading, setProgressLoading] = useState(false)
+  const [courseForm, setCourseForm] = useState({
+    id: '',
+    title: '',
+    slug: '',
+    description: '',
+    priceKes: '3000',
+    isActive: true,
+  })
 
   useEffect(() => {
     window.localStorage.removeItem('adminKey')
@@ -112,6 +133,7 @@ export default function AdminDashboard() {
         // Also fetch students and modules
         fetchStudentsModules(keyToUse)
         fetchReviews(keyToUse)
+        fetchCourses(keyToUse)
       } else {
         window.localStorage.removeItem('adminKey')
         setAuthed(false)
@@ -155,6 +177,23 @@ export default function AdminDashboard() {
     }
   }
 
+  const fetchCourses = async (keyOverride?: string) => {
+    setCoursesLoading(true)
+    try {
+      const res = await fetch('/api/admin/courses', {
+        headers: { 'x-admin-key': keyOverride || adminKey }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setCourses(Array.isArray(data.courses) ? data.courses : [])
+      }
+    } catch (e) {
+      console.error('Error fetching courses:', e)
+    } finally {
+      setCoursesLoading(false)
+    }
+  }
+
   const fetchStudentProgress = async (studentId: string) => {
     setProgressLoading(true)
     try {
@@ -177,6 +216,81 @@ export default function AdminDashboard() {
 
   const exportCSV = () => {
     window.open('/api/admin/export?key=' + adminKey, '_blank')
+  }
+
+  const resetCourseForm = () => {
+    setCourseForm({
+      id: '',
+      title: '',
+      slug: '',
+      description: '',
+      priceKes: '3000',
+      isActive: true,
+    })
+  }
+
+  const selectCourseForEdit = (course: CourseItem) => {
+    setCourseForm({
+      id: course.id,
+      title: course.title,
+      slug: course.slug,
+      description: course.description || '',
+      priceKes: String(course.price_kes),
+      isActive: course.is_active,
+    })
+  }
+
+  const saveCourse = async () => {
+    if (!courseForm.title.trim() || !courseForm.slug.trim()) {
+      alert('Title and slug are required')
+      return
+    }
+
+    const payload = {
+      title: courseForm.title,
+      slug: courseForm.slug,
+      description: courseForm.description,
+      priceKes: Number(courseForm.priceKes),
+      isActive: courseForm.isActive,
+    }
+
+    try {
+      const res = await fetch('/api/admin/courses', {
+        method: courseForm.id ? 'PATCH' : 'POST',
+        headers: { 'x-admin-key': adminKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify(courseForm.id ? { courseId: courseForm.id, ...payload } : payload),
+      })
+
+      if (res.ok) {
+        await fetchCourses()
+        resetCourseForm()
+        alert(courseForm.id ? 'Course updated' : 'Course created')
+      } else {
+        const err = await res.json()
+        alert(err?.error || 'Failed to save course')
+      }
+    } catch (e) {
+      alert('Failed to save course')
+    }
+  }
+
+  const toggleCourseActive = async (course: CourseItem) => {
+    try {
+      const res = await fetch('/api/admin/courses', {
+        method: 'PATCH',
+        headers: { 'x-admin-key': adminKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ courseId: course.id, isActive: !course.is_active }),
+      })
+
+      if (res.ok) {
+        await fetchCourses()
+      } else {
+        const err = await res.json()
+        alert(err?.error || 'Failed to update course status')
+      }
+    } catch (e) {
+      alert('Failed to update course status')
+    }
   }
 
   const scheduleMeeting = async () => {
@@ -402,7 +516,7 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-dark-900">Admin Dashboard</h1>
-            <p className="text-dark-600 text-xs sm:text-sm mt-1">Multi-course platform</p>
+            <p className="text-dark-600 text-xs sm:text-sm mt-1">Manage users, payments, reviews, and all course offerings</p>
           </div>
           <div className="flex gap-3">
             <button onClick={() => fetchStats()} className="btn-secondary text-sm">
@@ -434,6 +548,113 @@ export default function AdminDashboard() {
 
             {/* Meetings + Certificates + Mark Progress */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-8">
+              <div className="card lg:col-span-3">
+                <div className="flex items-center justify-between gap-4 mb-4">
+                  <div>
+                    <h3 className="text-lg font-bold text-dark-900">Course Management</h3>
+                    <p className="text-dark-600 text-sm mt-1">Create, edit, activate, or deactivate every course offered on the platform.</p>
+                  </div>
+                  <button onClick={() => fetchCourses()} className="btn-secondary text-sm">
+                    <RefreshCw size={14} /> Refresh Courses
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-4">
+                  <div>
+                    {coursesLoading ? (
+                      <div className="text-dark-600 text-sm py-10 text-center">Loading courses...</div>
+                    ) : courses.length === 0 ? (
+                      <div className="text-center py-10 text-dark-600 border border-dashed border-brand-100 rounded-2xl bg-brand-50/30">
+                        No courses loaded yet. Create the first course using the form on the right.
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {courses.map(course => (
+                          <div key={course.id} className="rounded-2xl border border-brand-100 bg-white p-4">
+                            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                              <div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <h4 className="font-semibold text-dark-900">{course.title}</h4>
+                                  <span className={`px-2 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wide border ${course.is_active ? 'bg-brand-50 border-brand-100 text-brand-700' : 'bg-dark-50 border-dark-100 text-dark-500'}`}>
+                                    {course.is_active ? 'active' : 'inactive'}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-dark-500 mt-1">/{course.slug}</p>
+                                <p className="text-sm text-dark-600 mt-2 leading-relaxed max-w-3xl">{course.description || 'No description provided.'}</p>
+                                <p className="text-sm font-semibold text-dark-900 mt-3">KES {course.price_kes.toLocaleString()}</p>
+                              </div>
+
+                              <div className="flex flex-wrap gap-2 md:justify-end">
+                                <button onClick={() => selectCourseForEdit(course)} className="btn-secondary px-3 py-2 text-xs">
+                                  Edit
+                                </button>
+                                <button onClick={() => toggleCourseActive(course)} className="btn-secondary px-3 py-2 text-xs">
+                                  {course.is_active ? 'Deactivate' : 'Activate'}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="rounded-2xl border border-brand-100 bg-brand-50/40 p-4">
+                    <div className="flex items-center justify-between gap-3 mb-4">
+                      <div>
+                        <h4 className="font-semibold text-dark-900">{courseForm.id ? 'Edit Course' : 'Add Course'}</h4>
+                        <p className="text-xs text-dark-600 mt-1">Use a clear slug like <span className="font-mono">ai-for-beginners</span>.</p>
+                      </div>
+                      {courseForm.id && (
+                        <button onClick={resetCourseForm} className="text-xs text-brand-700 hover:underline">
+                          New course
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="space-y-3">
+                      <input
+                        className="w-full bg-white border border-brand-100 p-2 rounded-lg text-dark-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                        placeholder="Course title"
+                        value={courseForm.title}
+                        onChange={e => setCourseForm(current => ({ ...current, title: e.target.value }))}
+                      />
+                      <input
+                        className="w-full bg-white border border-brand-100 p-2 rounded-lg text-dark-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                        placeholder="course-slug"
+                        value={courseForm.slug}
+                        onChange={e => setCourseForm(current => ({ ...current, slug: e.target.value }))}
+                      />
+                      <textarea
+                        className="w-full bg-white border border-brand-100 p-2 rounded-lg text-dark-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 min-h-[110px]"
+                        placeholder="Course description"
+                        value={courseForm.description}
+                        onChange={e => setCourseForm(current => ({ ...current, description: e.target.value }))}
+                      />
+                      <input
+                        type="number"
+                        min="1"
+                        className="w-full bg-white border border-brand-100 p-2 rounded-lg text-dark-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                        placeholder="Price in KES"
+                        value={courseForm.priceKes}
+                        onChange={e => setCourseForm(current => ({ ...current, priceKes: e.target.value }))}
+                      />
+                      <label className="flex items-center gap-2 text-sm text-dark-700">
+                        <input
+                          type="checkbox"
+                          checked={courseForm.isActive}
+                          onChange={e => setCourseForm(current => ({ ...current, isActive: e.target.checked }))}
+                        />
+                        Course is active
+                      </label>
+                      <button onClick={saveCourse} className="btn-primary w-full">
+                        {courseForm.id ? 'Update Course' : 'Create Course'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="card">
                 <h3 className="text-lg font-bold text-dark-900 mb-3">Mark Module Complete</h3>
                 <div className="mb-3">
