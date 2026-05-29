@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Smartphone, Loader2, CheckCircle2, XCircle, ArrowRight } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -16,6 +16,7 @@ export default function EnrollmentSection() {
   const [receiptNo, setReceiptNo] = useState('')
   const [pollCount, setPollCount] = useState(0)
   const [selectedCourseSlug, setSelectedCourseSlug] = useState(initialCourseSlug)
+  const selectedCourseSlugRef = useRef(initialCourseSlug)
 
   const [form, setForm] = useState({ name: '', email: '', phone: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -38,6 +39,9 @@ export default function EnrollmentSection() {
 
     setLoading(true)
     try {
+      const courseSlug = selectedCourseSlugRef.current
+      const courseForPayment = getCourseOption(courseSlug)
+
       const res = await fetch('/api/mpesa/initiate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -45,8 +49,8 @@ export default function EnrollmentSection() {
           name: form.name.trim(),
           email: form.email.toLowerCase().trim(),
           phone: form.phone.trim(),
-          courseId: selectedCourse.slug,
-          courseSlug: selectedCourse.slug,
+          courseId: courseForPayment.slug,
+          courseSlug: courseForPayment.slug,
         }),
       })
 
@@ -105,6 +109,7 @@ export default function EnrollmentSection() {
     }`
 
   const selectCourse = (slug: string) => {
+    selectedCourseSlugRef.current = slug
     setSelectedCourseSlug(slug)
     setStep('form')
     setCheckoutRequestId('')
