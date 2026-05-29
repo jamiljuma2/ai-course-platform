@@ -36,6 +36,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${sora.variable} ${jetbrains.variable}`}>
+      <head>
+        {/* Fallback precompiled CSS to ensure styles load even if Tailwind build fails */}
+        <link rel="stylesheet" href="/tailwind.css" />
+      </head>
       <body className="bg-white text-dark-900 antialiased">
         {children}
         <Toaster
