@@ -2,6 +2,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { initiateSTKPush, isValidKenyanPhone, formatPhone } from '@/lib/mpesa'
 import { createAdminServerClient } from '@/lib/supabase/admin'
+import { COURSE_OPTIONS } from '@/lib/course-options'
+
+type CourseRecord = {
+  id: string
+  slug: string
+  title: string
+  price_kes: number
+}
 
 async function resolveAuthUserId(
   supabase: ReturnType<typeof createAdminServerClient>,
@@ -39,15 +47,59 @@ async function resolveAuthUserId(
   return matchedUser.id
 }
 
+async function resolveCourseForPayment(
+  supabase: ReturnType<typeof createAdminServerClient>,
+  courseRef: string
+): Promise<CourseRecord | null> {
+  const ref = courseRef.trim()
+  if (!ref) return null
+
+  const { data: byId } = await supabase
+    .from('courses')
+    .select('id, slug, title, price_kes')
+    .eq('id', ref)
+    .eq('is_active', true)
+    .maybeSingle()
+
+  if (byId) return byId
+
+  const { data: bySlug } = await supabase
+    .from('courses')
+    .select('id, slug, title, price_kes')
+    .eq('slug', ref)
+    .eq('is_active', true)
+    .maybeSingle()
+
+  if (bySlug) return bySlug
+
+  const catalogCourse = COURSE_OPTIONS.find((course) => course.slug === ref)
+  if (!catalogCourse) return null
+
+  const { data: upserted } = await supabase
+    .from('courses')
+    .upsert({
+      slug: catalogCourse.slug,
+      title: catalogCourse.title,
+      description: catalogCourse.description,
+      price_kes: catalogCourse.priceKes,
+      is_active: true,
+    }, { onConflict: 'slug' })
+    .select('id, slug, title, price_kes')
+    .single()
+
+  return upserted || null
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { name, email, phone, courseId } = body
+    const { name, email, phone, courseId, courseSlug } = body
+    const courseRef = String(courseId || courseSlug || '').trim()
 
     // --- Validation ---
-    if (!name || !email || !phone || !courseId) {
+    if (!name || !email || !phone || !courseRef) {
       return NextResponse.json(
-        { error: 'Missing required fields: name, email, phone, courseId' },
+        { error: 'Missing required fields: name, email, phone, and course reference' },
         { status: 400 }
       )
     }
@@ -61,12 +113,8 @@ export async function POST(req: NextRequest) {
 
     const supabase = createAdminServerClient()
 
-    // --- Get course ---
-    const { data: course } = await supabase
-      .from('courses')
-      .select('id, price_kes, title')
-      .eq('id', courseId)
-      .single()
+    // --- Resolve course by id or slug ---
+    const course = await resolveCourseForPayment(supabase, courseRef)
 
     if (!course) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 })
@@ -87,7 +135,7 @@ export async function POST(req: NextRequest) {
         .from('enrollments')
         .select('id, course_access')
         .eq('user_id', userId)
-        .eq('course_id', courseId)
+        .eq('course_id', course.id)
         .eq('payment_status', 'completed')
         .single()
 
@@ -116,7 +164,7 @@ export async function POST(req: NextRequest) {
       .from('payments')
       .insert({
         user_id: userId,
-        course_id: courseId,
+        course_id: course.id,
         amount: course.price_kes,
         phone: formatPhone(phone),
         status: 'pending',
@@ -130,7 +178,7 @@ export async function POST(req: NextRequest) {
     // --- Create pending enrollment ---
     await supabase.from('enrollments').upsert({
       user_id: userId,
-      course_id: courseId,
+      course_id: course.id,
       payment_id: payment.id,
       payment_status: 'pending',
       course_access: false,

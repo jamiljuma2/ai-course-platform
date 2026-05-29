@@ -43,14 +43,6 @@ export default function EnrollmentSection() {
 
     setLoading(true)
     try {
-      const courseRes = await fetch(`/api/courses/slug/${selectedCourse.slug}`)
-      const courseData = await courseRes.json()
-
-      if (!courseRes.ok) {
-        toast.error(courseData.error || 'Selected course is not available')
-        return
-      }
-
       const res = await fetch('/api/mpesa/initiate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -58,7 +50,8 @@ export default function EnrollmentSection() {
           name: form.name.trim(),
           email: form.email.toLowerCase().trim(),
           phone: form.phone.trim(),
-          courseId: courseData.id,
+          courseId: selectedCourse.slug,
+          courseSlug: selectedCourse.slug,
         }),
       })
 
