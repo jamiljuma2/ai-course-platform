@@ -4,6 +4,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import DashboardClient from '@/components/lms/DashboardClient'
 import { getCertificateStatus } from '@/lib/certificate'
 import Link from 'next/link'
+import RefreshDashboardButton from '@/components/dashboard/RefreshDashboardButton'
 
 export default async function DashboardPage() {
   const supabase = createServerClient()
@@ -63,9 +64,10 @@ export default async function DashboardPage() {
             </Link>
           </div>
 
-          <p className="text-xs text-dark-500">
-            Already completed payment? <a href="/" className="text-brand-700 hover:underline">Refresh the page</a>
-          </p>
+          <div className="mt-2 flex items-center justify-center gap-2 text-xs text-dark-500">
+            <span>Already completed payment?</span>
+            <RefreshDashboardButton />
+          </div>
         </div>
       </div>
     )
