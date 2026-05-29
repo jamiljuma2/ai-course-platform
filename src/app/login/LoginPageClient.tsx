@@ -243,13 +243,6 @@ export default function LoginPageClient() {
           </div>
 
           {/* Magic link sign-in removed by request */}
-
-          <p className="text-center text-dark-500 text-xs mt-4">
-            Don't have access?{' '}
-            <Link href="/#enroll" className="text-brand-400 hover:underline">
-              Enroll for KES 3,000
-            </Link>
-          </p>
         </div>
       </div>
     </div>
