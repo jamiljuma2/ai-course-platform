@@ -25,7 +25,7 @@ export default function FAQPage() {
 
           <div>
             <h2 className="text-xl font-semibold mb-2">Can I get a refund?</h2>
-            <p className="text-dark-600">Refunds are handled case-by-case. Contact our support at <a href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@aicourse.co.ke'}`} className="text-brand-700">support</a>.</p>
+            <p className="text-dark-600">Refunds are handled case-by-case. Contact our support at <a href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@nextgenacademy.com'}`} className="text-brand-700">support</a>.</p>
           </div>
         </section>
 

@@ -1,5 +1,5 @@
 -- ============================================================
--- AI COURSE PLATFORM - COMPLETE DATABASE SCHEMA
+-- NEXTGEN ACADEMY - COMPLETE DATABASE SCHEMA
 -- Run this in Supabase SQL Editor
 -- ============================================================
 

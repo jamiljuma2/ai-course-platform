@@ -25,7 +25,7 @@ export default function PrivacyPage() {
 
           <div>
             <h2 className="text-lg font-semibold">Your Rights</h2>
-            <p className="mt-2">You can request access to or deletion of your data by contacting support at <a href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@aicourse.co.ke'}`} className="text-brand-700">support</a>.</p>
+            <p className="mt-2">You can request access to or deletion of your data by contacting support at <a href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@nextgenacademy.com'}`} className="text-brand-700">support</a>.</p>
           </div>
         </section>
 

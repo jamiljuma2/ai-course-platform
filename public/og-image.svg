@@ -8,7 +8,7 @@
   <rect width="1200" height="630" fill="url(#g)" />
   <g transform="translate(60,120)">
     <rect x="0" y="0" width="120" height="120" rx="16" fill="#f97316" />
-    <text x="150" y="70" font-family="Sora, Arial, sans-serif" font-size="56" fill="#fff" font-weight="700">AI for Beginners</text>
+    <text x="150" y="70" font-family="Sora, Arial, sans-serif" font-size="56" fill="#fff" font-weight="700">NextGen Academy</text>
     <text x="150" y="120" font-family="JetBrains Mono, monospace" font-size="28" fill="#d1d5db">Practical AI Skills · Pay with M-Pesa</text>
     <text x="150" y="170" font-family="JetBrains Mono, monospace" font-size="28" fill="#fbbf24">Enroll for KES 3,000</text>
   </g>

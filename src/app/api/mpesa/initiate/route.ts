@@ -140,8 +140,8 @@ export async function POST(req: NextRequest) {
     const stkResponse = await initiateSTKPush({
       phone,
       amount: course.price_kes,
-      accountRef: 'AICOURSE',
-      description: 'AI Course Fee',
+      accountRef: 'NEXTGEN',
+      description: 'NextGen Academy Fee',
     })
 
     // --- Store checkout request ID ---

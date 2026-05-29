@@ -89,8 +89,8 @@ export default function DashboardClient({
         </button>
 
         <Link href="/" className="flex items-center gap-2 mr-auto">
-          <div className="w-7 h-7 rounded-lg bg-brand-500 flex items-center justify-center text-xs font-bold text-white shadow-sm shadow-brand-500/20">AI</div>
-          <span className="hidden sm:block font-semibold text-dark-900 text-sm">AI for Beginners</span>
+          <div className="w-7 h-7 rounded-lg bg-brand-500 flex items-center justify-center text-xs font-bold text-white shadow-sm shadow-brand-500/20">NG</div>
+          <span className="hidden sm:block font-semibold text-dark-900 text-sm">NextGen Academy</span>
         </Link>
 
         <div className="hidden sm:flex items-center gap-2 text-sm text-dark-500">

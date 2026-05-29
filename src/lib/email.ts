@@ -14,7 +14,7 @@ function getResendClient() {
   return new Resend(apiKey)
 }
 
-const FROM = process.env.EMAIL_FROM || 'AI Course <noreply@aicourse.co.ke>'
+const FROM = process.env.EMAIL_FROM || 'NextGen Academy <noreply@nextgenacademy.com>'
 
 // --- ENROLLMENT CONFIRMATION EMAIL ---
 export async function sendEnrollmentEmail(user: User, course: Course) {
@@ -27,7 +27,7 @@ export async function sendEnrollmentEmail(user: User, course: Course) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to AI for Beginners!</title>
+  <title>Welcome to NextGen Academy!</title>
 </head>
 <body style="margin:0;padding:0;background:#0a0a0b;font-family:'Helvetica Neue',Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0b;padding:40px 20px;">

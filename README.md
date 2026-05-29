@@ -1,4 +1,4 @@
-# AI for Beginners — Course Platform
+# NextGen Academy — Course Platform
 
 A production-ready full-stack online course platform with M-Pesa payments, mini-LMS, and email automation. Built for the Kenyan market and priced at KES 3,000.
 
@@ -238,6 +238,6 @@ Use a PDF generation service (Puppeteer or PDFMonkey) triggered when `capstone_p
 
 ## 🆘 Support
 
-- Email: support@aicourse.co.ke
+- Email: support@nextgenacademy.com
 - M-Pesa issues: Check Safaricom Daraja console logs
 - Supabase issues: Check project logs in Supabase Dashboard

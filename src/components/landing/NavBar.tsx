@@ -61,9 +61,9 @@ export default function NavBar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-sm font-bold text-white shadow-md shadow-brand-500/25">
-            AI
+            NG
           </div>
-          <span className="font-bold text-dark-900">AI for Beginners</span>
+          <span className="font-bold text-dark-900">NextGen Academy</span>
         </Link>
 
         {/* Desktop nav */}
