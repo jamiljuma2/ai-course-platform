@@ -139,7 +139,7 @@ export default function LoginPageClient() {
   // magic link sign-in removed; users should use password or Forgot password flow
 
   const inputClass =
-     'w-full bg-white border border-dark-200 rounded-xl px-4 py-3.5 text-dark-900 placeholder-dark-400 outline-none transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20'
+    'w-full bg-white border border-dark-200 rounded-xl px-4 py-3.5 text-dark-900 placeholder-dark-300 placeholder:opacity-45 outline-none transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20'
 
   return (
     <div className="min-h-screen bg-dark-900 flex items-center justify-center px-4">
