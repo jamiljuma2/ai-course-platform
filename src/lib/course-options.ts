@@ -37,6 +37,6 @@ export const COURSE_OPTIONS: CourseOption[] = [
   },
 ]
 
-export function getCourseOption(slug?: string | null) {
-  return COURSE_OPTIONS.find(course => course.slug === slug) || COURSE_OPTIONS[0]
+export function getCourseOption(slug?: string | null, courses: CourseOption[] = COURSE_OPTIONS) {
+  return courses.find(course => course.slug === slug) || courses[0] || COURSE_OPTIONS[0]
 }

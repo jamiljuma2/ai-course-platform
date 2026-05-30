@@ -4,12 +4,17 @@ import { useSearchParams } from 'next/navigation'
 import { Smartphone, Loader2, CheckCircle2, XCircle, ArrowRight } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { COURSE_OPTIONS, getCourseOption } from '@/lib/course-options'
+import type { CourseOption } from '@/lib/course-options'
 
 type Step = 'form' | 'pending' | 'success' | 'failed'
 
-export default function EnrollmentSection() {
+interface EnrollmentSectionProps {
+  courses: CourseOption[]
+}
+
+export default function EnrollmentSection({ courses }: EnrollmentSectionProps) {
   const searchParams = useSearchParams()
-  const initialCourseSlug = getCourseOption(searchParams.get('course')).slug
+  const initialCourseSlug = getCourseOption(searchParams.get('course'), courses).slug
   const [step, setStep] = useState<Step>('form')
   const [loading, setLoading] = useState(false)
   const [checkoutRequestId, setCheckoutRequestId] = useState('')
@@ -21,7 +26,7 @@ export default function EnrollmentSection() {
   const [form, setForm] = useState({ name: '', email: '', phone: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const selectedCourse = getCourseOption(selectedCourseSlug)
+  const selectedCourse = getCourseOption(selectedCourseSlug, courses)
 
   const validate = () => {
     const e: Record<string, string> = {}
@@ -40,7 +45,7 @@ export default function EnrollmentSection() {
     setLoading(true)
     try {
       const courseSlug = selectedCourseSlugRef.current
-      const courseForPayment = getCourseOption(courseSlug)
+      const courseForPayment = getCourseOption(courseSlug, courses)
 
       const res = await fetch('/api/mpesa/initiate', {
         method: 'POST',
@@ -133,7 +138,7 @@ export default function EnrollmentSection() {
               <div>
                 <label className="block text-sm font-medium text-dark-600 mb-2">Choose Your Course</label>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  {COURSE_OPTIONS.map(course => {
+                  {courses.map(course => {
                     const active = course.slug === selectedCourse.slug
                     return (
                       <button

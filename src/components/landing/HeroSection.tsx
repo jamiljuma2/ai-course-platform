@@ -2,11 +2,14 @@
 import { ArrowRight, Star, Users, BookOpen, Award } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { COURSE_OPTIONS } from '@/lib/course-options'
 
-const stats = [
+interface HeroSectionProps {
+  courseCount: number
+}
+
+const stats = (courseCount: number) => [
   { icon: Users, value: '500+', label: 'Students Enrolled' },
-  { icon: BookOpen, value: `${COURSE_OPTIONS.length}+`, label: 'Courses' },
+  { icon: BookOpen, value: `${courseCount}+`, label: 'Courses' },
   { icon: Star, value: '4.9', label: 'Average Rating' },
   { icon: Award, value: '100%', label: 'Practical Skills' },
 ]
@@ -19,7 +22,7 @@ interface ProgressData {
   completionPercent: number
 }
 
-export default function HeroSection() {
+export default function HeroSection({ courseCount }: HeroSectionProps) {
   const [roleIdx, setRoleIdx] = useState(0)
   const [progress, setProgress] = useState<ProgressData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -188,7 +191,7 @@ export default function HeroSection() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 animate-fade-up" style={{ animationDelay: '0.3s' }}>
-            {stats.map(({ icon: Icon, value, label }) => (
+            {stats(courseCount).map(({ icon: Icon, value, label }) => (
               <div key={label} className="text-center">
                 <div className="flex justify-center mb-2">
                   <Icon size={20} className="text-brand-600" />

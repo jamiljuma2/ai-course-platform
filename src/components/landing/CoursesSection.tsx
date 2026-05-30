@@ -1,8 +1,12 @@
 import Link from 'next/link'
 import { ArrowRight, Check } from 'lucide-react'
-import { COURSE_OPTIONS } from '@/lib/course-options'
+import type { CourseOption } from '@/lib/course-options'
 
-export default function CoursesSection() {
+interface CoursesSectionProps {
+  courses: CourseOption[]
+}
+
+export default function CoursesSection({ courses }: CoursesSectionProps) {
   return (
     <section id="courses" className="py-24 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -17,7 +21,7 @@ export default function CoursesSection() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          {COURSE_OPTIONS.map(course => (
+          {courses.map(course => (
             <div
               key={course.slug}
               className="card border-brand-100 bg-gradient-to-br from-white to-brand-50/50 hover:border-brand-300 transition-all duration-300 hover:shadow-xl"
