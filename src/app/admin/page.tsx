@@ -72,6 +72,7 @@ export default function AdminDashboard() {
   const [meetingDuration, setMeetingDuration] = useState('60')
   const [meetingLink, setMeetingLink] = useState(process.env.NEXT_PUBLIC_GOOGLE_MEET_LINK || '')
   const [notifyUsers, setNotifyUsers] = useState(true)
+  const [selectedCourseForMeeting, setSelectedCourseForMeeting] = useState('')
   const [certEmail, setCertEmail] = useState('')
   const [students, setStudents] = useState<Student[]>([])
   const [modules, setModules] = useState<Module[]>([])
@@ -303,14 +304,23 @@ export default function AdminDashboard() {
           start_time: meetingStartTime,
           duration_minutes: Number(meetingDuration),
           meet_link: meetingLink,
-          notify: notifyUsers,
+            notify: notifyUsers,
+            courseId: selectedCourseForMeeting || undefined,
         }),
       })
       if (res.ok) {
-        alert('Meeting scheduled')
+        const d = await res.json()
+        const notified = d?.notify
+        if (notified) {
+          const failCount = Array.isArray(notified.failed) ? notified.failed.length : 0
+          alert(`Meeting scheduled — notified ${notified.notifiedCount || 0} users (${failCount} failures)`)
+        } else {
+          alert('Meeting scheduled')
+        }
         setMeetingTitle('')
         setMeetingStartTime('')
         setMeetingDuration('60')
+        setSelectedCourseForMeeting('')
       } else {
         const err = await res.json()
         alert(err?.error || 'Failed')
@@ -713,6 +723,19 @@ export default function AdminDashboard() {
                   End Time: {meetingEndTime || 'Auto-calculated after duration is set'}
                 </div>
                 <input className="w-full mb-2 bg-white border border-brand-100 p-2 rounded-lg text-dark-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" placeholder="Meet link" value={meetingLink} onChange={e=>setMeetingLink(e.target.value)} />
+                <div className="mb-3">
+                  <label className="block text-xs text-dark-600 mb-1">Target course</label>
+                  <select
+                    value={selectedCourseForMeeting}
+                    onChange={e => setSelectedCourseForMeeting(e.target.value)}
+                    className="w-full bg-white border border-brand-100 rounded-lg px-3 py-2 text-dark-900 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                  >
+                    <option value="">All enrolled users</option>
+                    {courses.map(c => (
+                      <option key={c.id} value={c.id}>{c.title} ({c.slug})</option>
+                    ))}
+                  </select>
+                </div>
                 <div className="flex items-center gap-2 mb-3">
                   <input id="notify" type="checkbox" checked={notifyUsers} onChange={e=>setNotifyUsers(e.target.checked)} />
                   <label htmlFor="notify" className="text-sm text-dark-600">Notify enrolled users</label>

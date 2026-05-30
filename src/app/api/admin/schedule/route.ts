@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   if (!verifyAdmin(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json().catch(() => ({}))
-  const { title, description, start_time, duration_minutes, meet_link, notify } = body
+  const { title, description, start_time, duration_minutes, meet_link, notify, courseId, course_slug } = body
 
   if (!title || !start_time || !duration_minutes) {
     return NextResponse.json({ error: 'Missing title, start_time, or duration_minutes' }, { status: 400 })
@@ -47,30 +47,53 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to create meeting' }, { status: 500 })
   }
 
+  let notifySummary = null
   if (notify) {
+    notifySummary = { notifiedCount: 0, notified: [], failed: [] as Array<{ id?: string; email?: string; error: string }> }
     try {
-      const { data: enrollments } = await supabase
-        .from('enrollments')
-        .select('user_id')
-        .eq('course_access', true)
+      // resolve course id if slug provided
+      let targetCourseId = courseId || null
+      if (!targetCourseId && course_slug) {
+        const { data: course } = await supabase.from('courses').select('id').eq('slug', course_slug).maybeSingle()
+        targetCourseId = course?.id || null
+      }
+
+      // fetch enrollments filtered by course if provided
+      let enrollmentsQuery = supabase.from('enrollments').select('user_id').eq('course_access', true)
+      if (targetCourseId) enrollmentsQuery = enrollmentsQuery.eq('course_id', targetCourseId)
+
+      const { data: enrollments } = await enrollmentsQuery
 
       if (enrollments && enrollments.length) {
-        for (const enrollment of enrollments) {
-          const { data: user } = await supabase
-            .from('users')
-            .select('id, name, email, role, created_at, phone, avatar_url')
-            .eq('id', enrollment.user_id)
-            .maybeSingle()
+        const userIds = enrollments.map((e: any) => e.user_id)
+        const { data: users } = await supabase
+          .from('users')
+          .select('id, name, email, role, created_at, phone, avatar_url')
+          .in('id', userIds)
 
-          if (user?.email) {
-            await sendMeetingNotification(user, data)
+        if (users && users.length) {
+          for (const user of users) {
+            if (!user?.email) {
+              notifySummary.failed.push({ id: user?.id, error: 'no email' })
+              continue
+            }
+            try {
+              await sendMeetingNotification(user, data)
+              notifySummary.notified.push(user.id)
+            } catch (err: any) {
+              console.error('Failed sending meeting to', user.email, err)
+              notifySummary.failed.push({ id: user.id, email: user.email, error: String(err?.message || err) })
+            }
           }
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to notify users about meeting', err)
+      notifySummary.failed.push({ error: String(err?.message || err) } as any)
     }
+
+    notifySummary.notifiedCount = notifySummary.notified.length
   }
 
-  return NextResponse.json({ meeting: data })
+  return NextResponse.json({ meeting: data, notify: notifySummary })
 }
