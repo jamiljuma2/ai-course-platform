@@ -7,6 +7,18 @@ function verifyAdmin(req: NextRequest) {
   return key === process.env.ADMIN_SECRET_KEY
 }
 
+type NotifyFailure = {
+  id?: string
+  email?: string
+  error: string
+}
+
+type NotifySummary = {
+  notifiedCount: number
+  notified: string[]
+  failed: NotifyFailure[]
+}
+
 export async function POST(req: NextRequest) {
   if (!verifyAdmin(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -47,9 +59,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to create meeting' }, { status: 500 })
   }
 
-  let notifySummary = null
+  let notifySummary: NotifySummary | null = null
   if (notify) {
-    notifySummary = { notifiedCount: 0, notified: [], failed: [] as Array<{ id?: string; email?: string; error: string }> }
+    notifySummary = { notifiedCount: 0, notified: [], failed: [] }
     try {
       // resolve course id if slug provided
       let targetCourseId = courseId || null
