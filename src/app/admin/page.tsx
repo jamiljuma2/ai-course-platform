@@ -1,6 +1,7 @@
 // app/admin/page.tsx
 'use client'
 import { useState, useEffect } from 'react'
+import toast from 'react-hot-toast'
 import {
   Users, DollarSign, TrendingUp, BookOpen,
   Download, RefreshCw, Mail, CheckCircle, XCircle, Clock
@@ -313,9 +314,11 @@ export default function AdminDashboard() {
         const notified = d?.notify
         if (notified) {
           const failCount = Array.isArray(notified.failed) ? notified.failed.length : 0
-          alert(`Meeting scheduled — notified ${notified.notifiedCount || 0} users (${failCount} failures)`)
+          const notifiedCount = notified.notifiedCount || 0
+          const courseLabel = selectedCourseForMeeting ? courses.find(course => course.id === selectedCourseForMeeting)?.title || 'selected course' : 'all enrolled users'
+          toast.success(`Meeting scheduled for ${courseLabel}. Notified ${notifiedCount} users${failCount > 0 ? `, ${failCount} failed` : ''}.`)
         } else {
-          alert('Meeting scheduled')
+          toast.success('Meeting scheduled')
         }
         setMeetingTitle('')
         setMeetingStartTime('')
@@ -323,10 +326,10 @@ export default function AdminDashboard() {
         setSelectedCourseForMeeting('')
       } else {
         const err = await res.json()
-        alert(err?.error || 'Failed')
+        toast.error(err?.error || 'Failed')
       }
     } catch (e) {
-      alert('Failed to schedule meeting')
+      toast.error('Failed to schedule meeting')
     }
   }
 
