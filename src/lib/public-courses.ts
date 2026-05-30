@@ -1,4 +1,5 @@
 import { createAdminServerClient } from '@/lib/supabase/admin'
+import { unstable_noStore as noStore } from 'next/cache'
 import type { Course } from '@/types'
 import { COURSE_OPTIONS, type CourseOption } from '@/lib/course-options'
 
@@ -19,6 +20,8 @@ function toCourseOption(course: Pick<Course, 'slug' | 'title' | 'description' | 
 }
 
 export async function getPublicCourseOptions(): Promise<CourseOption[]> {
+  noStore()
+
   const supabase = createAdminServerClient()
   const { data, error } = await supabase
     .from('courses')

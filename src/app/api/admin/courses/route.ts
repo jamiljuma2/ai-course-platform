@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { createAdminServerClient } from '@/lib/supabase/admin'
 
 function isAdminRequest(req: NextRequest) {
@@ -71,6 +72,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error?.message || 'Failed to save course' }, { status: 500 })
   }
 
+  revalidatePath('/')
+  revalidatePath('/#enroll')
+
   return NextResponse.json({ course: data })
 }
 
@@ -115,6 +119,9 @@ export async function PATCH(req: NextRequest) {
   if (error || !data) {
     return NextResponse.json({ error: error?.message || 'Failed to update course' }, { status: 500 })
   }
+
+  revalidatePath('/')
+  revalidatePath('/#enroll')
 
   return NextResponse.json({ course: data })
 }
