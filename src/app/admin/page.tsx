@@ -86,6 +86,7 @@ export default function AdminDashboard() {
   const [completedLessonIds, setCompletedLessonIds] = useState<string[]>([])
   const [markingProgress, setMarkingProgress] = useState(false)
   const [progressLoading, setProgressLoading] = useState(false)
+  const [thumbnailUploading, setThumbnailUploading] = useState(false)
   const [courseForm, setCourseForm] = useState({
     id: '',
     title: '',
@@ -222,6 +223,7 @@ export default function AdminDashboard() {
   }
 
   const resetCourseForm = () => {
+    setThumbnailUploading(false)
     setCourseForm({
       id: '',
       title: '',
@@ -246,6 +248,11 @@ export default function AdminDashboard() {
   }
 
   const saveCourse = async () => {
+    if (thumbnailUploading) {
+      alert('Please wait for the thumbnail upload to finish')
+      return
+    }
+
     if (!courseForm.title.trim() || !courseForm.slug.trim()) {
       alert('Title and slug are required')
       return
@@ -277,6 +284,46 @@ export default function AdminDashboard() {
       }
     } catch (e) {
       alert('Failed to save course')
+    }
+  }
+
+  const uploadThumbnail = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      alert('Please choose an image file')
+      return
+    }
+
+    const maxSizeBytes = 5 * 1024 * 1024
+    if (file.size > maxSizeBytes) {
+      alert('Thumbnail image must be 5 MB or smaller')
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('courseSlug', courseForm.slug || courseForm.title || 'course')
+
+    setThumbnailUploading(true)
+    try {
+      const res = await fetch('/api/admin/courses/upload-thumbnail', {
+        method: 'POST',
+        headers: { 'x-admin-key': adminKey },
+        body: formData,
+      })
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        alert(err?.error || 'Failed to upload thumbnail')
+        return
+      }
+
+      const data = await res.json()
+      setCourseForm(current => ({ ...current, thumbnail: data.thumbnailUrl || '' }))
+      toast.success('Thumbnail uploaded')
+    } catch (e) {
+      alert('Failed to upload thumbnail')
+    } finally {
+      setThumbnailUploading(false)
     }
   }
 
@@ -657,21 +704,37 @@ export default function AdminDashboard() {
                         value={courseForm.description}
                         onChange={e => setCourseForm(current => ({ ...current, description: e.target.value }))}
                       />
-                      <input
-                        className="w-full bg-white border border-brand-100 p-2 rounded-lg text-dark-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
-                        placeholder="Thumbnail image URL"
-                        value={courseForm.thumbnail}
-                        onChange={e => setCourseForm(current => ({ ...current, thumbnail: e.target.value }))}
-                      />
-                      {courseForm.thumbnail ? (
-                        <div className="overflow-hidden rounded-xl border border-brand-100 bg-white">
-                          <img
-                            src={courseForm.thumbnail}
-                            alt={courseForm.title || 'Course thumbnail preview'}
-                            className="h-40 w-full object-cover"
-                          />
-                        </div>
-                      ) : null}
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-dark-700">Thumbnail image</label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="w-full bg-white border border-brand-100 p-2 rounded-lg text-dark-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                          onChange={e => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                              void uploadThumbnail(file)
+                            }
+                            e.target.value = ''
+                          }}
+                        />
+                        <p className="text-xs text-dark-500">
+                          {thumbnailUploading
+                            ? 'Uploading thumbnail...'
+                            : courseForm.thumbnail
+                              ? 'Thumbnail uploaded. Upload a new image to replace it.'
+                              : 'Upload a PNG, JPG, GIF, or WebP image up to 5 MB.'}
+                        </p>
+                        {courseForm.thumbnail ? (
+                          <div className="overflow-hidden rounded-xl border border-brand-100 bg-white">
+                            <img
+                              src={courseForm.thumbnail}
+                              alt={courseForm.title || 'Course thumbnail preview'}
+                              className="h-40 w-full object-cover"
+                            />
+                          </div>
+                        ) : null}
+                      </div>
                       <input
                         type="number"
                         min="1"
@@ -688,7 +751,7 @@ export default function AdminDashboard() {
                         />
                         Course is active
                       </label>
-                      <button onClick={saveCourse} className="btn-primary w-full">
+                      <button onClick={saveCourse} disabled={thumbnailUploading} className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed">
                         {courseForm.id ? 'Update Course' : 'Create Course'}
                       </button>
                     </div>
