@@ -3,6 +3,7 @@ export interface CourseOption {
   title: string
   description: string
   priceKes: number
+  thumbnail?: string
   duration: string
   badge: string
   highlights: string[]

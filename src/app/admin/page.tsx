@@ -91,6 +91,7 @@ export default function AdminDashboard() {
     title: '',
     slug: '',
     description: '',
+    thumbnail: '',
     priceKes: '3000',
     isActive: true,
   })
@@ -226,6 +227,7 @@ export default function AdminDashboard() {
       title: '',
       slug: '',
       description: '',
+      thumbnail: '',
       priceKes: '3000',
       isActive: true,
     })
@@ -237,6 +239,7 @@ export default function AdminDashboard() {
       title: course.title,
       slug: course.slug,
       description: course.description || '',
+      thumbnail: course.thumbnail || '',
       priceKes: String(course.price_kes),
       isActive: course.is_active,
     })
@@ -252,6 +255,7 @@ export default function AdminDashboard() {
       title: courseForm.title,
       slug: courseForm.slug,
       description: courseForm.description,
+      thumbnail: courseForm.thumbnail,
       priceKes: Number(courseForm.priceKes),
       isActive: courseForm.isActive,
     }
@@ -592,6 +596,15 @@ export default function AdminDashboard() {
                                     {course.is_active ? 'active' : 'inactive'}
                                   </span>
                                 </div>
+                                {course.thumbnail ? (
+                                  <div className="mt-3 overflow-hidden rounded-xl border border-brand-100 bg-brand-50/50">
+                                    <img
+                                      src={course.thumbnail}
+                                      alt={course.title}
+                                      className="h-36 w-full object-cover"
+                                    />
+                                  </div>
+                                ) : null}
                                 <p className="text-xs text-dark-500 mt-1">/{course.slug}</p>
                                 <p className="text-sm text-dark-600 mt-2 leading-relaxed max-w-3xl">{course.description || 'No description provided.'}</p>
                                 <p className="text-sm font-semibold text-dark-900 mt-3">KES {course.price_kes.toLocaleString()}</p>
@@ -644,6 +657,21 @@ export default function AdminDashboard() {
                         value={courseForm.description}
                         onChange={e => setCourseForm(current => ({ ...current, description: e.target.value }))}
                       />
+                      <input
+                        className="w-full bg-white border border-brand-100 p-2 rounded-lg text-dark-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                        placeholder="Thumbnail image URL"
+                        value={courseForm.thumbnail}
+                        onChange={e => setCourseForm(current => ({ ...current, thumbnail: e.target.value }))}
+                      />
+                      {courseForm.thumbnail ? (
+                        <div className="overflow-hidden rounded-xl border border-brand-100 bg-white">
+                          <img
+                            src={courseForm.thumbnail}
+                            alt={courseForm.title || 'Course thumbnail preview'}
+                            className="h-40 w-full object-cover"
+                          />
+                        </div>
+                      ) : null}
                       <input
                         type="number"
                         min="1"

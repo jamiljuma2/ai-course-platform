@@ -26,6 +26,15 @@ export default function CoursesSection({ courses }: CoursesSectionProps) {
               key={course.slug}
               className="card border-brand-100 bg-gradient-to-br from-white to-brand-50/50 hover:border-brand-300 transition-all duration-300 hover:shadow-xl"
             >
+              {course.thumbnail ? (
+                <div className="mb-5 overflow-hidden rounded-2xl border border-brand-100 bg-brand-50/60">
+                  <img
+                    src={course.thumbnail}
+                    alt={course.title}
+                    className="h-56 w-full object-cover"
+                  />
+                </div>
+              ) : null}
               <div className="flex items-start justify-between gap-4 mb-5">
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-semibold mb-4 border border-brand-100">

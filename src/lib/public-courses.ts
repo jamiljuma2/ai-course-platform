@@ -5,7 +5,7 @@ import { COURSE_OPTIONS, type CourseOption } from '@/lib/course-options'
 
 const FALLBACK_BY_SLUG = new Map(COURSE_OPTIONS.map(course => [course.slug, course]))
 
-function toCourseOption(course: Pick<Course, 'slug' | 'title' | 'description' | 'price_kes'>): CourseOption {
+function toCourseOption(course: Pick<Course, 'slug' | 'title' | 'description' | 'price_kes' | 'thumbnail'>): CourseOption {
   const fallback = FALLBACK_BY_SLUG.get(course.slug)
 
   return {
@@ -13,6 +13,7 @@ function toCourseOption(course: Pick<Course, 'slug' | 'title' | 'description' | 
     title: course.title,
     description: course.description || fallback?.description || '',
     priceKes: course.price_kes,
+    thumbnail: course.thumbnail || fallback?.thumbnail,
     duration: fallback?.duration || 'Practical track',
     badge: fallback?.badge || 'Course',
     highlights: fallback?.highlights || [],
@@ -25,7 +26,7 @@ export async function getPublicCourseOptions(): Promise<CourseOption[]> {
   const supabase = createAdminServerClient()
   const { data, error } = await supabase
     .from('courses')
-    .select('slug, title, description, price_kes')
+    .select('slug, title, description, price_kes, thumbnail')
     .eq('is_active', true)
     .order('created_at', { ascending: true })
 

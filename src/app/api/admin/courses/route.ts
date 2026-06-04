@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
   const title = String(body.title || '').trim()
   const slug = normalizeSlug(String(body.slug || body.title || ''))
   const description = String(body.description || '').trim() || null
+  const thumbnail = String(body.thumbnail || body.thumbnail_url || '').trim() || null
   const priceKes = Number(body.price_kes ?? body.priceKes)
   const isActive = body.is_active ?? body.isActive ?? true
 
@@ -60,6 +61,7 @@ export async function POST(req: NextRequest) {
         title,
         slug,
         description,
+        thumbnail,
         price_kes: Math.round(priceKes),
         is_active: Boolean(isActive),
       },
@@ -93,6 +95,9 @@ export async function PATCH(req: NextRequest) {
   if (typeof body.title === 'string') updates.title = body.title.trim()
   if (typeof body.slug === 'string') updates.slug = normalizeSlug(body.slug)
   if (typeof body.description === 'string') updates.description = body.description.trim() || null
+  if (typeof body.thumbnail === 'string' || typeof body.thumbnail_url === 'string') {
+    updates.thumbnail = String(body.thumbnail ?? body.thumbnail_url).trim() || null
+  }
   if (body.price_kes !== undefined || body.priceKes !== undefined) {
     const priceKes = Number(body.price_kes ?? body.priceKes)
     if (!Number.isFinite(priceKes) || priceKes <= 0) {
