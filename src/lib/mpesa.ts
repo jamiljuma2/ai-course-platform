@@ -26,6 +26,14 @@ function hasLipanaConfig() {
   return Boolean(process.env.LIPANA_API_KEY)
 }
 
+function hasPayHeroConfig() {
+  return Boolean(
+    process.env.PAYHERO_CHANNEL_ID &&
+    (process.env.PAYHERO_AUTH_TOKEN ||
+      (process.env.PAYHERO_USERNAME && process.env.PAYHERO_PASSWORD))
+  )
+}
+
 // Generate OAuth access token
 async function getAccessToken(): Promise<string> {
   const credentials = Buffer.from(
@@ -60,7 +68,16 @@ function generatePassword(timestamp: string): string {
 }
 
 function getCallbackUrl(): string {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, '')
+  const supabaseWebhookUrl = supabaseUrl
+    ? `${supabaseUrl}/functions/v1/payhero-webhook${process.env.PAYHERO_WEBHOOK_SECRET
+      ? `?secret=${encodeURIComponent(process.env.PAYHERO_WEBHOOK_SECRET)}`
+      : ''}`
+    : undefined
+
   return (
+    process.env.PAYHERO_CALLBACK_URL ||
+    supabaseWebhookUrl ||
     process.env.MPESA_CALLBACK_URL ||
     (process.env.NEXT_PUBLIC_APP_URL
       ? `${process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '')}/api/webhook/mpesa`
@@ -87,6 +104,10 @@ export function isValidKenyanPhone(phone: string): boolean {
 export async function initiateSTKPush(
   req: MpesaSTKPushRequest
 ): Promise<MpesaSTKPushResponse> {
+  if (hasPayHeroConfig()) {
+    return await initiatePayHeroSTKPush(req)
+  }
+
   // If Lipana is configured, prefer Lipana STK push (new provider)
   if (hasLipanaConfig()) {
     return await initiateLipanaSTKPush(req)
@@ -133,6 +154,83 @@ export async function initiateSTKPush(
   )
 
   return response.data
+}
+
+// ----------------------
+// PayHero integration
+// ----------------------
+async function initiatePayHeroSTKPush(
+  req: MpesaSTKPushRequest
+): Promise<MpesaSTKPushResponse> {
+  const phone = formatPhone(req.phone)
+  if (!isValidKenyanPhone(req.phone)) {
+    throw new Error('Invalid Kenyan phone number. Use format: 07XXXXXXXX or 01XXXXXXXX')
+  }
+
+  const configuredToken = process.env.PAYHERO_AUTH_TOKEN?.trim()
+  const credentials = configuredToken
+    ? /^(Basic|Bearer)\s/i.test(configuredToken)
+      ? configuredToken
+      : `Basic ${configuredToken}`
+    : `Basic ${Buffer.from(`${process.env.PAYHERO_USERNAME}:${process.env.PAYHERO_PASSWORD}`).toString('base64')}`
+
+  const callbackUrl = getCallbackUrl()
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?\//i.test(callbackUrl)) {
+    throw new Error(
+      'PayHero requires a public callback URL. Set PAYHERO_CALLBACK_URL to an HTTPS URL or use an ngrok/tunnel URL.'
+    )
+  }
+
+  const payload = {
+    amount: Math.round(req.amount),
+    phone_number: phone,
+    channel_id: Number(process.env.PAYHERO_CHANNEL_ID),
+    provider: 'm-pesa',
+    external_reference: req.accountRef,
+    customer_name: req.description,
+    callback_url: callbackUrl,
+  }
+
+  try {
+    const response = await axios.post(
+      process.env.PAYHERO_API_URL || 'https://backend.payhero.co.ke/api/v2/payments',
+      payload,
+      {
+        headers: {
+          Authorization: credentials,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+
+    const body = response.data || {}
+    const data = body.data || body
+    const reference = data.reference || data.payment_id || data.id
+
+    if (!reference) {
+      throw new Error('PayHero returned no payment reference')
+    }
+
+    return {
+      CheckoutRequestID: String(reference),
+      MerchantRequestID: String(data.merchant_request_id || data.transaction_id || reference),
+      ResponseCode: String(data.status || body.status || 'queued'),
+      ResponseDescription: String(data.message || body.message || 'PayHero STK push queued'),
+      CustomerMessage: String(data.message || body.message || 'Check your phone for the M-Pesa prompt'),
+    }
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      const responseData = error.response?.data
+      const payHeroMessage =
+        responseData?.message ||
+        responseData?.error ||
+        responseData?.error_message ||
+        (typeof responseData === 'string' ? responseData : JSON.stringify(responseData)) ||
+        error.message
+      throw new Error(`PayHero STK push failed: ${payHeroMessage}`)
+    }
+    throw error
+  }
 }
 
 // ----------------------

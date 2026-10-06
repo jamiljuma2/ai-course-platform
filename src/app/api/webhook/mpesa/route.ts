@@ -14,11 +14,92 @@ import type { MpesaCallbackBody } from '@/types'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
+function isPayHeroPayload(payload: unknown): payload is Record<string, unknown> {
+  if (!payload || typeof payload !== 'object') return false
+  const body = payload as Record<string, unknown>
+  return Boolean(
+    body.external_reference ||
+    body.payment_id ||
+    body.reference ||
+    body.provider === 'm-pesa'
+  ) && !body.Body
+}
+
+function isSuccessfulPayHeroStatus(status: unknown) {
+  return ['success', 'successful', 'completed', 'paid'].includes(String(status).toLowerCase())
+}
+
 export async function POST(req: NextRequest) {
   try {
     // Read raw body for signature verification (required by Lipana)
     const raw = await req.text()
     const lipanaSignature = req.headers.get('x-lipana-signature') || req.headers.get('X-Lipana-Signature')
+    const parsedBody = JSON.parse(raw)
+
+    if (isPayHeroPayload(parsedBody)) {
+      const supabase = createAdminServerClient()
+      const externalReference = String(parsedBody.external_reference || '')
+      const reference = String(parsedBody.reference || parsedBody.payment_id || '')
+      const paymentQuery = supabase
+        .from('payments')
+        .select('id, user_id, course_id, amount, metadata')
+
+      const { data: payment, error: paymentError } = externalReference
+        ? await paymentQuery.eq('id', externalReference).maybeSingle()
+        : await paymentQuery.eq('checkout_request_id', reference).maybeSingle()
+
+      if (paymentError || !payment) {
+        console.error('[PAYHERO WEBHOOK] Payment not found:', externalReference || reference)
+        return NextResponse.json({ received: true })
+      }
+
+      const status = String(parsedBody.status || '').toLowerCase()
+      const transactionId = String(
+        parsedBody.receipt_number || parsedBody.mpesa_receipt || parsedBody.transaction_id || reference
+      )
+      const amount = parsedBody.amount || payment.amount
+      const phone = parsedBody.phone_number || parsedBody.phone || ''
+
+      if (isSuccessfulPayHeroStatus(status)) {
+        await supabase.from('payments').update({
+          status: 'completed',
+          checkout_request_id: reference || null,
+          transaction_id: transactionId,
+          mpesa_receipt: transactionId,
+          metadata: { ...payment.metadata, rawWebhook: parsedBody, provider: 'payhero' },
+        }).eq('id', payment.id)
+
+        await supabase.from('enrollments').update({
+          payment_status: 'completed',
+          course_access: true,
+          enrolled_at: new Date().toISOString(),
+          expires_at: null,
+        }).eq('user_id', payment.user_id).eq('course_id', payment.course_id)
+
+        const [{ data: user }, { data: course }] = await Promise.all([
+          supabase.from('users').select('*').eq('id', payment.user_id).single(),
+          supabase.from('courses').select('*').eq('id', payment.course_id).single(),
+        ])
+
+        if (user && course) {
+          await sendEnrollmentEmail(user, course).catch(err => console.error('Email send failed:', err))
+        }
+
+        await sendAdminNotification(
+          `New Enrollment: ${user?.name}`,
+          `User: ${user?.name} (${user?.email})\nPhone: ${phone}\nAmount: KES ${amount}\nReceipt: ${transactionId}\nCourse: ${course?.title}`
+        ).catch(() => {})
+      } else if (['failed', 'cancelled', 'reversed'].includes(status)) {
+        const failureReason = String(parsedBody.failure_reason || parsedBody.message || status)
+        await supabase.from('payments').update({ status: 'failed', failure_reason: failureReason }).eq('id', payment.id)
+        await supabase.from('enrollments').update({ payment_status: 'failed' }).eq('user_id', payment.user_id).eq('course_id', payment.course_id)
+
+        const { data: user } = await supabase.from('users').select('email, name').eq('id', payment.user_id).single()
+        if (user) await sendPaymentFailedEmail(user.email, user.name, failureReason).catch(() => {})
+      }
+
+      return NextResponse.json({ received: true })
+    }
 
     // Handle Lipana webhooks if signature header present
     if (lipanaSignature) {
@@ -27,7 +108,7 @@ export async function POST(req: NextRequest) {
         return new NextResponse('Unauthorized', { status: 401 })
       }
 
-      const parsed = JSON.parse(raw)
+      const parsed = parsedBody
       console.log('[LIPANA WEBHOOK]', JSON.stringify(parsed, null, 2))
 
       const event = parsed.event

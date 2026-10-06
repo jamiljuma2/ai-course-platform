@@ -10,7 +10,7 @@ A production-ready full-stack online course platform with M-Pesa payments, mini-
 |-------|-----------|
 | Frontend | Next.js 14 (App Router, TypeScript) |
 | Backend/DB | Supabase (PostgreSQL, Auth, RLS) |
-| Payments | M-Pesa Daraja API (STK Push / Lipa Na M-Pesa) |
+| Payments | PayHero M-Pesa STK Push |
 | Email | Resend |
 | Hosting | Vercel |
 | Styling | Tailwind CSS |
@@ -81,15 +81,17 @@ npm install
 3. Copy your **Project URL** and **anon key** from Settings → API
 4. Copy your **service_role key** (keep secret!)
 
-### 3. M-Pesa Daraja API Setup
+### 3. PayHero Setup
 
-1. Register at [developer.safaricom.co.ke](https://developer.safaricom.co.ke)
-2. Create an app → get **Consumer Key** and **Consumer Secret**
-3. For sandbox: use the test shortcode `174379` and passkey from Daraja
-4. For production: apply for a Paybill shortcode from Safaricom
-5. Set `MPESA_CALLBACK_URL` = `https://your-domain.com/api/webhook/mpesa`
-   - ⚠️ This URL **must be publicly accessible** — Safaricom cannot reach localhost
-   - Use [ngrok](https://ngrok.com) for local development: `ngrok http 3000`
+1. Create a PayHero account and create an M-Pesa payment channel.
+2. Copy the channel ID and API credentials from the PayHero dashboard.
+3. Deploy the Supabase webhook function:
+       ```bash
+       supabase functions deploy payhero-webhook --no-verify-jwt
+       supabase secrets set PAYHERO_WEBHOOK_SECRET="replace-with-a-long-random-secret"
+       ```
+4. Set `PAYHERO_CALLBACK_URL` to the Supabase function URL, including the same secret:
+       `https://your-project-ref.supabase.co/functions/v1/payhero-webhook?secret=replace-with-a-long-random-secret`
 
 ### 4. Resend Email Setup
 
@@ -109,12 +111,11 @@ Required variables:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
-- `MPESA_CONSUMER_KEY`
-- `MPESA_CONSUMER_SECRET`
-- `MPESA_SHORTCODE`
-- `MPESA_PASSKEY`
-- `MPESA_CALLBACK_URL`
-- `MPESA_ENV` = `sandbox` or `production`
+- `PAYHERO_CHANNEL_ID`
+- `PAYHERO_AUTH_TOKEN` (or `PAYHERO_USERNAME` and `PAYHERO_PASSWORD`)
+- `PAYHERO_API_URL` (optional; defaults to `https://backend.payhero.co.ke/api/v2/payments`)
+- `PAYHERO_CALLBACK_URL` (Supabase Edge Function URL)
+- `PAYHERO_WEBHOOK_SECRET` (same secret configured in Supabase)
 - `RESEND_API_KEY`
 - `EMAIL_FROM`
 - `SUPPORT_EMAIL`
@@ -141,9 +142,9 @@ vercel --prod
 
 Then add all environment variables in Vercel Dashboard → Project → Settings → Environment Variables.
 
-**Important**: After deploying, update `MPESA_CALLBACK_URL` to your Vercel domain:
+**Important**: After deploying the Supabase function, configure the same callback URL in PayHero and `.env.local`:
 ```
-https://your-app.vercel.app/api/webhook/mpesa
+https://your-project-ref.supabase.co/functions/v1/payhero-webhook?secret=replace-with-a-long-random-secret
 ```
 
 ---
@@ -162,7 +163,7 @@ STK Prompt appears on student's phone
        ↓
 Student enters PIN
        ↓
-Safaricom calls POST /api/webhook/mpesa
+PayHero calls POST /functions/v1/payhero-webhook
   → Updates payment (completed/failed)
   → Grants course_access = true
   → Sends enrollment email
