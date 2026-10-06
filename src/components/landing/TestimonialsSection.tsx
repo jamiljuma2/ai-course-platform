@@ -100,10 +100,10 @@ export default function TestimonialsSection() {
         <div className="text-center mb-16">
           <p className="section-label mb-3">Student Success Stories</p>
           <h2 className="text-4xl md:text-5xl font-bold text-dark-900 mb-4">
-            Real Results and Fresh Reviews
+            What our students say
           </h2>
           <p className="text-dark-600 text-lg max-w-2xl mx-auto">
-            Read verified learner reviews, then leave your own rating, comment, and story. New submissions are reviewed before they go public.
+            Discover the experiences of our learners, or share your own learning journey.
           </p>
           <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-brand-100 bg-brand-50 px-4 py-2 text-sm text-dark-700">
             <Star size={16} className="text-brand-600 fill-brand-600" />
@@ -166,7 +166,7 @@ export default function TestimonialsSection() {
             </div>
           </div>
 
-          <div className="card border-brand-100 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.08)] sticky top-6">
+          <div className="card border-brand-100 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.08)] sticky top-24">
             <div className="flex items-start gap-3 mb-5">
               <div className="w-11 h-11 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-700">
                 <Send size={18} />

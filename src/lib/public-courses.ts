@@ -23,6 +23,10 @@ function toCourseOption(course: Pick<Course, 'slug' | 'title' | 'description' | 
 export async function getPublicCourseOptions(): Promise<CourseOption[]> {
   noStore()
 
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return COURSE_OPTIONS
+  }
+
   const supabase = createAdminServerClient()
   const { data, error } = await supabase
     .from('courses')

@@ -1,11 +1,13 @@
+import Logo from '@/components/Logo'
+
 export default function FooterSection() {
   return (
-    <footer className="bg-white border-t border-brand-100 py-12">
+    <footer className="academy-footer py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid sm:grid-cols-3 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-sm font-bold text-white shadow-md shadow-brand-500/25">NG</div>
+              <Logo />
               <span className="font-bold text-dark-900">NextGen Academy</span>
             </div>
             <p className="text-dark-600 text-sm leading-relaxed">
@@ -16,7 +18,7 @@ export default function FooterSection() {
             <h4 className="text-dark-900 font-semibold mb-4">Courses</h4>
             <ul className="space-y-2 text-dark-600 text-sm">
               <li><a href="#courses" className="hover:text-brand-700 transition-colors">All Courses</a></li>
-              <li><a href="#modules" className="hover:text-brand-700 transition-colors">All Modules</a></li>
+              <li><a href="#about" className="hover:text-brand-700 transition-colors">About Us</a></li>
               <li><a href="#enroll" className="hover:text-brand-700 transition-colors">Enroll Now</a></li>
               <li><a href="/dashboard" className="hover:text-brand-700 transition-colors">Student Dashboard</a></li>
             </ul>

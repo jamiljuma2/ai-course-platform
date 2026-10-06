@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Loader2, Mail, Lock, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
+import Logo from '@/components/Logo'
 import toast from 'react-hot-toast'
 
 export default function LoginPageClient() {
@@ -145,7 +146,7 @@ export default function LoginPageClient() {
     <div className="min-h-screen bg-dark-900 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <Link href="/" className="flex items-center justify-center gap-2 mb-8">
-         <div className="w-9 h-9 rounded-xl bg-brand-500 flex items-center justify-center font-bold">NG</div>
+         <Logo className="w-9 h-9" />
          <span className="font-bold text-dark-900 text-lg">NextGen Academy</span>
         </Link>
 

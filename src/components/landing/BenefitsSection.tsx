@@ -1,67 +1,15 @@
-import { Zap, DollarSign, Globe, Shield, Clock, TrendingUp } from 'lucide-react'
-
+import Image from 'next/image'
+import { BookOpen, TrendingUp, Award } from 'lucide-react'
 const benefits = [
-  {
-    icon: Zap,
-    title: 'Learn by Doing',
-    desc: 'Every module has a real-world practical assignment. No theory without action.',
-  },
-  {
-    icon: DollarSign,
-    title: 'Generate Income Fast',
-    desc: 'Start offering AI services on Fiverr or Upwork while you\'re still in the course.',
-  },
-  {
-    icon: Globe,
-    title: 'Work from Anywhere',
-    desc: 'All skills are location-independent. Earn in USD while living in Kenya.',
-  },
-  {
-    icon: Shield,
-    title: 'Lifetime Access',
-    desc: 'One payment, lifetime access. Including all future updates to course content.',
-  },
-  {
-    icon: Clock,
-    title: 'Learn at Your Pace',
-    desc: 'Self-paced learning with live weekly Q&A sessions every Saturday.',
-  },
-  {
-    icon: TrendingUp,
-    title: 'Certificate of Completion',
-    desc: 'Earn a verifiable certificate after completing your capstone project.',
-  },
+  { icon: BookOpen, title: 'Online courses', description: 'Explore focused courses in AI and web development, with lessons you can revisit anytime.' },
+  { icon: TrendingUp, title: 'Upgrade personal skills', description: 'Put each lesson into practice with assignments that help you build useful, real-world skills.' },
+  { icon: Award, title: 'Certification', description: 'Complete your course and capstone project to earn a verifiable certificate.' },
 ]
-
 export default function BenefitsSection() {
-  return (
-    <section className="py-24 bg-white/80 border-y border-brand-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-16">
-          <p className="section-label mb-3">Why This Course</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-dark-900 mb-4">
-            Built for Real Results
-          </h2>
-          <p className="text-dark-600 text-lg max-w-xl mx-auto">
-            Not just AI theory — practical skills you can monetize the same week you learn them.
-          </p>
-        </div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {benefits.map(({ icon: Icon, title, desc }) => (
-            <div
-              key={title}
-              className="card group hover:border-brand-300 hover:-translate-y-1 transition-all duration-300"
-            >
-              <div className="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center mb-4 group-hover:bg-brand-100 transition-colors">
-                <Icon size={22} className="text-brand-600" />
-              </div>
-              <h3 className="text-dark-900 font-semibold text-lg mb-2">{title}</h3>
-              <p className="text-dark-600 text-sm leading-relaxed">{desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
+  return <section id="about" className="academy-about geometric-section"><div className="academy-container about-layout">
+    <div className="about-photo"><span className="student-badge"><strong>Learn</strong><span>without limits</span></span><Image width={1222} height={1287} sizes="(max-width: 640px) 100vw, 500px" src="/images/academy-learner.png" alt="Student sitting comfortably with her laptop" /></div>
+    <div className="about-copy"><p className="section-label">WHY NEXTGEN</p><h2>Quality instruction.<br />A brighter future.</h2><p className="section-intro">Take the next step with accessible online education built around practical skills, meaningful projects, and your ambitions.</p>
+      <div className="about-benefits">{benefits.map(({ icon: Icon, title, description }) => <div className="about-benefit" key={title}><span className="feature-icon"><Icon size={23} /></span><div><h3>{title}</h3><p>{description}</p></div></div>)}</div>
+    </div>
+  </div></section>
 }

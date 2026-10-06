@@ -1,77 +1,18 @@
 import Link from 'next/link'
-import { ArrowRight, Check } from 'lucide-react'
+import { ArrowRight, BookOpen, Award, Check } from 'lucide-react'
 import type { CourseOption } from '@/lib/course-options'
 
-interface CoursesSectionProps {
-  courses: CourseOption[]
-}
-
-export default function CoursesSection({ courses }: CoursesSectionProps) {
-  return (
-    <section id="courses" className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-14">
-          <p className="section-label mb-3">Choose Your Course</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-dark-900 mb-4">
-            Pick a practical path and start learning
-          </h2>
-          <p className="text-dark-600 text-lg max-w-2xl mx-auto">
-            Students can choose the course that fits their goals, then pay once and get lifetime access.
-          </p>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2">
-          {courses.map(course => (
-            <div
-              key={course.slug}
-              className="card border-brand-100 bg-gradient-to-br from-white to-brand-50/50 hover:border-brand-300 transition-all duration-300 hover:shadow-xl"
-            >
-              {course.thumbnail ? (
-                <div className="mb-5 overflow-hidden rounded-2xl border border-brand-100 bg-brand-50/60">
-                  <img
-                    src={course.thumbnail}
-                    alt={course.title}
-                    className="h-56 w-full object-cover"
-                  />
-                </div>
-              ) : null}
-              <div className="flex items-start justify-between gap-4 mb-5">
-                <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-semibold mb-4 border border-brand-100">
-                    {course.badge}
-                  </div>
-                  <h3 className="text-2xl font-bold text-dark-900 mb-2">{course.title}</h3>
-                  <p className="text-dark-600 leading-relaxed">{course.description}</p>
-                </div>
-                <div className="text-right shrink-0">
-                  <div className="text-xs uppercase tracking-wider text-dark-500 mb-1">From</div>
-                  <div className="text-2xl font-bold text-brand-700">KES {course.priceKes.toLocaleString()}</div>
-                  <div className="text-xs text-dark-500 mt-1">{course.duration}</div>
-                </div>
-              </div>
-
-              <div className="space-y-3 mb-6">
-                {course.highlights.map(item => (
-                  <div key={item} className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-brand-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check size={12} className="text-brand-600" />
-                    </div>
-                    <span className="text-dark-600 text-sm leading-relaxed">{item}</span>
-                  </div>
-                ))}
-              </div>
-
-              <Link
-                href={`/?course=${course.slug}#enroll`}
-                className="btn-primary w-full inline-flex justify-center text-sm"
-              >
-                Choose {course.title}
-                <ArrowRight size={16} />
-              </Link>
-            </div>
-          ))}
-        </div>
+export default function CoursesSection({ courses }: { courses: CourseOption[] }) {
+  return <section id="courses" className="academy-courses geometric-section"><div className="academy-container">
+    <div className="courses-heading"><div><p className="section-label">LEARN SOMETHING NEW</p><h2>Featured courses</h2></div><a href="#enroll" className="btn-primary">All courses <ArrowRight size={14} /></a></div>
+    <div className={`course-grid ${courses.length === 2 ? 'course-grid-two' : ''}`}>{courses.map((course) => <article key={course.slug} className="academy-course-card">
+      <div className="course-image"><img src={course.thumbnail || (course.slug.includes('web') ? '/images/course-web.png' : '/images/course-ai.png')} alt={course.title} loading="lazy" /><span className="course-price">KES {course.priceKes.toLocaleString()}</span></div>
+      <div className="course-body"><p className="course-category">{course.badge}</p><h3>{course.title}</h3><p className="course-description">{course.description}</p>
+        <div className="course-stars"><Check size={13} /><span>Practical, project-based learning</span></div>
+        <div className="course-meta"><span><BookOpen size={13} /> {course.duration}</span><span><Award size={13} /> Certificate</span></div>
+        <Link href={`/?course=${course.slug}#enroll`} className="course-enroll">Enroll now <ArrowRight size={14} /></Link>
       </div>
-    </section>
-  )
+    </article>)}</div>
+    {courses.length === 0 && <p className="section-intro">New courses are coming soon. Contact us to learn more.</p>}
+  </div></section>
 }

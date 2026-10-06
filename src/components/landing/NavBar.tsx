@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Logo from '@/components/Logo'
 import { Menu, X, LogOut } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -54,22 +55,23 @@ export default function NavBar() {
   }
 
   return (
-    <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-      scrolled ? 'bg-white/90 backdrop-blur-xl border-b border-brand-100 shadow-sm' : 'bg-transparent'
+    <>
+    <div className="academy-announcement">Build your future, one skill at a time. <a href="#courses">Find your course →</a></div>
+    <nav className={`academy-nav sticky top-0 inset-x-0 z-50 transition-all duration-300 ${
+      scrolled ? 'bg-white/95 backdrop-blur-md border-b border-neutral-200' : 'bg-[#fafbf8] border-b border-neutral-200/60'
     }`}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-sm font-bold text-white shadow-md shadow-brand-500/25">
-            NG
-          </div>
+          <Logo />
           <span className="font-bold text-dark-900">NextGen Academy</span>
         </Link>
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">
           <a href="#courses" className="text-sm text-dark-600 hover:text-brand-600 transition-colors">Courses</a>
-          <a href="#enroll" className="text-sm text-dark-600 hover:text-brand-600 transition-colors">Enroll</a>
+          <a href="#about" className="text-sm text-dark-600 hover:text-brand-600 transition-colors">About us</a>
+          <a href="#reviews" className="text-sm text-dark-600 hover:text-brand-600 transition-colors">Reviews</a>
           {!loading && user && (
             <Link href="/dashboard" className="text-sm text-dark-600 hover:text-brand-600 transition-colors">Dashboard</Link>
           )}
@@ -97,7 +99,7 @@ export default function NavBar() {
               ) : (
                 <>
                   <Link href="/login" className="text-sm text-dark-600 hover:text-brand-600 transition-colors">Sign In</Link>
-                  <a href="#courses" className="btn-primary py-2 px-5 text-sm">Choose Course</a>
+                  <a href="#courses" className="btn-primary py-2 px-5 text-sm">Get Started</a>
                 </>
               )}
             </>
@@ -106,6 +108,8 @@ export default function NavBar() {
 
         {/* Mobile menu */}
         <button
+          aria-label={open ? 'Close navigation' : 'Open navigation'}
+          aria-expanded={open}
           className="md:hidden text-dark-900"
           onClick={() => setOpen(!open)}
         >
@@ -117,7 +121,8 @@ export default function NavBar() {
       {open && (
         <div className="md:hidden bg-white border-t border-brand-100 px-4 py-4 space-y-4 shadow-lg">
           <a href="#courses" onClick={() => setOpen(false)} className="block text-dark-600 hover:text-brand-600">Courses</a>
-          {/* Curriculum link removed to avoid exposing module details to users */}
+          <a href="#about" onClick={() => setOpen(false)} className="block text-dark-600 hover:text-brand-600">About us</a>
+          <a href="#reviews" onClick={() => setOpen(false)} className="block text-dark-600 hover:text-brand-600">Reviews</a>
           <a href="#enroll" onClick={() => setOpen(false)} className="block text-dark-600 hover:text-brand-600">Enroll</a>
           {!loading && user && (
             <Link href="/dashboard" onClick={() => setOpen(false)} className="block text-dark-600 hover:text-brand-600">Dashboard</Link>
@@ -149,7 +154,7 @@ export default function NavBar() {
               ) : (
                 <>
                   <Link href="/login" onClick={() => setOpen(false)} className="block text-dark-600 hover:text-brand-600">Sign In</Link>
-                  <a href="#courses" onClick={() => setOpen(false)} className="btn-primary w-full text-center">Choose Course</a>
+                  <a href="#courses" onClick={() => setOpen(false)} className="btn-primary w-full text-center">Get Started</a>
                 </>
               )}
             </>
@@ -157,5 +162,6 @@ export default function NavBar() {
         </div>
       )}
     </nav>
+    </>
   )
 }

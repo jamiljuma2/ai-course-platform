@@ -6,6 +6,7 @@ import {
   ClipboardList
 } from 'lucide-react'
 import Link from 'next/link'
+import Logo from '@/components/Logo'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
@@ -89,7 +90,7 @@ export default function DashboardClient({
         </button>
 
         <Link href="/" className="flex items-center gap-2 mr-auto">
-          <div className="w-7 h-7 rounded-lg bg-brand-500 flex items-center justify-center text-xs font-bold text-white shadow-sm shadow-brand-500/20">NG</div>
+          <Logo className="w-7 h-7" />
           <span className="hidden sm:block font-semibold text-dark-900 text-sm">NextGen Academy</span>
         </Link>
 
