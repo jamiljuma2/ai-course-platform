@@ -123,7 +123,7 @@ export default function EnrollmentSection({ courses }: EnrollmentSectionProps) {
   }
 
   return (
-    <section id="enroll" className="py-24 bg-brand-50/60 border-y border-brand-50">
+    <section id="enroll" className="py-20 bg-brand-50/60 border-y border-brand-50">
       <div className="max-w-xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-12">
           <p className="section-label mb-3">Get Started Today</p>
@@ -131,12 +131,15 @@ export default function EnrollmentSection({ courses }: EnrollmentSectionProps) {
           <p className="text-dark-600">Pay with M-Pesa — no card or account needed</p>
         </div>
 
-        <div className="card">
+        <div className="card enrollment-card">
           {/* --- FORM STEP --- */}
           {step === 'form' && (
             <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-dark-600 mb-2">Choose Your Course</label>
+              <fieldset className="course-choice">
+                <div className="enrollment-step-heading">
+                  <span className="enrollment-step-number">01</span>
+                  <legend className="block text-sm font-semibold text-dark-900">Choose your course</legend>
+                </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {courses.map(course => {
                     const active = course.slug === selectedCourse.slug
@@ -145,6 +148,7 @@ export default function EnrollmentSection({ courses }: EnrollmentSectionProps) {
                         key={course.slug}
                         type="button"
                         onClick={() => selectCourse(course.slug)}
+                        aria-pressed={active}
                         className={`text-left rounded-xl border p-4 transition-all ${
                           active
                             ? 'border-brand-500 bg-brand-50 shadow-sm'
@@ -161,12 +165,16 @@ export default function EnrollmentSection({ courses }: EnrollmentSectionProps) {
                     )
                   })}
                 </div>
-              </div>
+              </fieldset>
 
               <div>
-                <label className="block text-sm font-medium text-dark-600 mb-2">Full Name</label>
+                <label htmlFor="enroll-name" className="block text-sm font-medium text-dark-700 mb-2">Full name</label>
                 <input
+                  id="enroll-name"
+                  name="name"
                   type="text"
+                  autoComplete="name"
+                  required
                   placeholder="e.g. Amina Wanjiku"
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
@@ -176,9 +184,13 @@ export default function EnrollmentSection({ courses }: EnrollmentSectionProps) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-dark-600 mb-2">Email Address</label>
+                <label htmlFor="enroll-email" className="block text-sm font-medium text-dark-700 mb-2">Email address</label>
                 <input
+                  id="enroll-email"
+                  name="email"
                   type="email"
+                  autoComplete="email"
+                  required
                   placeholder="you@gmail.com"
                   value={form.email}
                   onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
@@ -188,11 +200,15 @@ export default function EnrollmentSection({ courses }: EnrollmentSectionProps) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-dark-600 mb-2">M-Pesa Phone Number</label>
+                <label htmlFor="enroll-phone" className="block text-sm font-medium text-dark-700 mb-2">M-Pesa phone number</label>
                 <div className="relative">
                   <Smartphone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-dark-500" />
                   <input
+                    id="enroll-phone"
+                    name="phone"
                     type="tel"
+                    autoComplete="tel"
+                    required
                     placeholder="0712 345 678"
                     value={form.phone}
                     onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
@@ -204,7 +220,7 @@ export default function EnrollmentSection({ courses }: EnrollmentSectionProps) {
               </div>
 
               {/* Summary */}
-              <div className="bg-brand-50 rounded-xl p-4 flex items-center justify-between border border-brand-100">
+              <div className="enrollment-summary" aria-live="polite">
                 <div>
                   <div className="text-sm text-dark-900 font-medium">{selectedCourse.title}</div>
                   <div className="text-xs text-dark-500">Lifetime access · {selectedCourse.duration}</div>
