@@ -6,6 +6,9 @@ node_modules/
 .next/
 out/
 
+# Supabase CLI local project state
+supabase/.temp/
+
 # environment secrets
 .env
 .env.local
