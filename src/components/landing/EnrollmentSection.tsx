@@ -14,19 +14,32 @@ interface EnrollmentSectionProps {
 
 export default function EnrollmentSection({ courses }: EnrollmentSectionProps) {
   const searchParams = useSearchParams()
-  const initialCourseSlug = getCourseOption(searchParams.get('course'), courses).slug
+  const requestedCourseSlug = getCourseOption(searchParams.get('course'), courses).slug
   const [step, setStep] = useState<Step>('form')
   const [loading, setLoading] = useState(false)
   const [checkoutRequestId, setCheckoutRequestId] = useState('')
   const [receiptNo, setReceiptNo] = useState('')
   const [pollCount, setPollCount] = useState(0)
-  const [selectedCourseSlug, setSelectedCourseSlug] = useState(initialCourseSlug)
-  const selectedCourseSlugRef = useRef(initialCourseSlug)
+  const [selectedCourseSlug, setSelectedCourseSlug] = useState(requestedCourseSlug)
+  const selectedCourseSlugRef = useRef(requestedCourseSlug)
 
   const [form, setForm] = useState({ name: '', email: '', phone: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const selectedCourse = getCourseOption(selectedCourseSlug, courses)
+
+  // Next.js can preserve this client component during navigation between course CTAs.
+  // Keep the selected course in sync with the latest ?course= value in that case.
+  useEffect(() => {
+    if (requestedCourseSlug === selectedCourseSlugRef.current) return
+
+    selectedCourseSlugRef.current = requestedCourseSlug
+    setSelectedCourseSlug(requestedCourseSlug)
+    setStep('form')
+    setCheckoutRequestId('')
+    setReceiptNo('')
+    setPollCount(0)
+  }, [requestedCourseSlug])
 
   const validate = () => {
     const e: Record<string, string> = {}
